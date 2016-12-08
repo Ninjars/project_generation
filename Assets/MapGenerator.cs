@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,6 +17,12 @@ public class MapGenerator : MonoBehaviour {
     public int wallThreshold = 5;
     public int voidThreshold = 3;
 
+    // remove wall regions smaller than this
+    public int wallThresholdSize = 50;
+
+    // remove room regions smaller than this
+    public int roomThresholdSize = 25;
+
     int[,] map;
 
     void Start() {
@@ -30,20 +35,15 @@ public class MapGenerator : MonoBehaviour {
         }
     }
 
-    // For debugging representation
-    /*
-    void OnDrawGizmos() {
-        if (map != null) {
-            for (int x = 0; x < width; x++) {
-                for (int y = 0; y < height; y++) {
-                    Gizmos.color = map[x, y] == 1 ? Color.black : Color.white;
-                    Vector3 pos = new Vector3(-width / 2 + x + 0.5f, 0, -height / 2 + y + 0.5f);
-                    Gizmos.DrawCube(pos, Vector3.one);
-                }
-            }
+    struct Coord {
+        public int tileX;
+        public int tileY;
+
+        public Coord(int x, int y) {
+            tileX = x;
+            tileY = y;
         }
     }
-    */
 
     void generateMap() {
         map = new int[width, height];
@@ -53,6 +53,10 @@ public class MapGenerator : MonoBehaviour {
             smoothMap();
         }
 
+        processMap();
+
+        /*
+        // surround map with walls.  May have unexpected effects with minimum-sized wall culling.
         int borderSize = 5;
         int[,] borderedMap = new int[width + borderSize * 2, height + borderSize * 2];
         for (int x = 0; x < borderedMap.GetLength(0); x++) {
@@ -64,24 +68,23 @@ public class MapGenerator : MonoBehaviour {
                 }
             }
         }
+        */
 
         MeshGenerator meshGen = GetComponent<MeshGenerator>();
-        meshGen.generateMesh(borderedMap, 1);
+        meshGen.generateMesh(map, 1);
     }
 
     void randomFillMap() {
-        if (useRandomSeed) {
-            seed = DateTime.Now.Ticks.ToString();
+        if (!useRandomSeed && seed != null) {
+            Random.InitState(seed.GetHashCode());
         }
-
-        System.Random random = new System.Random(seed.GetHashCode());
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 if (x == 0 || x == width - 1 || y == 0 || y == height - 1) {
                     map[x, y] = 1;
                 } else {
-                    map[x, y] = random.Next(0, 100) < randomFillPercent ? 1 : 0;
+                    map[x, y] = Random.value < randomFillPercent / 100f ? 1 : 0;
                 }
             }
         }
@@ -106,7 +109,7 @@ public class MapGenerator : MonoBehaviour {
         for (int neighbourX = gridX - 1; neighbourX <= gridX + 1; neighbourX++) {
             for (int neighbourY = gridY - 1; neighbourY <= gridY + 1; neighbourY++) {
                 // check all tiles within map bounds to see if they are walls
-                if (neighbourX >= 0 && neighbourX < width && neighbourY >= 0 && neighbourY < height) {
+                if (isInMapRange(neighbourX, neighbourY)) {
                     if (neighbourX != gridX || neighbourY != gridY) {
                         // walls are values as 1 and void is 0
                         wallCount += map[neighbourX, neighbourY];
@@ -119,6 +122,82 @@ public class MapGenerator : MonoBehaviour {
         }
 
         return wallCount;
+    }
+
+    void processMap() {
+        List<List<Coord>> wallRegions = getRegions(1);
+        foreach (List<Coord> wallRegion in wallRegions) {
+            Debug.Log(wallRegion.Count);
+            if (wallRegion.Count < wallThresholdSize) {
+                foreach (Coord tile in wallRegion) {
+                    map[tile.tileX, tile.tileY] = 0;
+                }
+            }
+        }
+        
+        List<List<Coord>> roomRegions = getRegions(0);
+        foreach (List<Coord> roomRegion in roomRegions) {
+            Debug.Log(roomRegion.Count);
+            if (roomRegion.Count < roomThresholdSize) {
+                foreach (Coord tile in roomRegion) {
+                    map[tile.tileX, tile.tileY] = 1;
+                }
+            }
+        }
+    }
+
+    List<List<Coord>> getRegions(int tileType) {
+        List<List<Coord>> regions = new List<List<Coord>>();
+        int[,] mapFlags = new int[width, height];
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                // find unchecked tile to begin searching for tile from
+                if (mapFlags[x, y] == 0 && map[x, y] == tileType) {
+                    List<Coord> newRegion = getRegionTiles(x, y);
+                    regions.Add(newRegion);
+                    // mark each tile in the region as having been looked at
+                    foreach(Coord tile in newRegion) {
+                        mapFlags[tile.tileX, tile.tileY] = 1;
+                    }
+                }
+            }
+        }
+
+        return regions;
+    }
+
+    List<Coord> getRegionTiles(int startX, int startY) {
+        List<Coord> tiles = new List<Coord>();
+        int[,] mapFlags = new int[width, height];
+        int tileType = map[startX, startY];
+
+        Queue<Coord> queue = new Queue<Coord>();
+        queue.Enqueue(new Coord(startX, startY));
+        mapFlags[startX, startY] = 1;
+
+        while (queue.Count > 0) {
+            Coord tile = queue.Dequeue();
+            tiles.Add(tile);
+
+            for (int x = tile.tileX - 1; x <= tile.tileX + 1; x++) {
+                for (int y = tile.tileY - 1; y <= tile.tileY + 1; y++) {
+                    // check inside map bounds, ignoring diagonal tiles
+                    if (isInMapRange(x, y) && (y == tile.tileY || x == tile.tileX)) {
+                        // check that this tile hasn't been checked before and that it is of the matching type
+                        if (mapFlags[x, y] == 0 && map[x, y] == tileType) {
+                            mapFlags[x, y] = 1;
+                            queue.Enqueue(new Coord(x, y));
+                        }
+                    }
+                }
+            }
+        }
+        return tiles;
+    }
+
+    bool isInMapRange(int x, int y) {
+        return x >= 0 && x < width && y >= 0 && y < height;
     }
 
 }

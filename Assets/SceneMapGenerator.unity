@@ -123,12 +123,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 80
   height: 60
-  seed: 
-  useRandomSeed: 1
+  seed: 5
+  useRandomSeed: 0
   randomFillPercent: 45
   smoothingPasses: 5
   wallThreshold: 5
   voidThreshold: 3
+  wallThresholdSize: 10
+  roomThresholdSize: 10
 --- !u!4 &347016424
 Transform:
   m_ObjectHideFlags: 0
