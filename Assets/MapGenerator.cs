@@ -23,6 +23,8 @@ public class MapGenerator : MonoBehaviour {
     // remove room regions smaller than this
     public int roomThresholdSize = 25;
 
+    public int passageRadius = 1;
+
     int[,] map;
 
     void Start() {
@@ -189,7 +191,6 @@ public class MapGenerator : MonoBehaviour {
     void processMap() {
         List<List<Coord>> wallRegions = getRegions(1);
         foreach (List<Coord> wallRegion in wallRegions) {
-            Debug.Log(wallRegion.Count);
             if (wallRegion.Count < wallThresholdSize) {
                 foreach (Coord tile in wallRegion) {
                     map[tile.tileX, tile.tileY] = 0;
@@ -201,7 +202,6 @@ public class MapGenerator : MonoBehaviour {
         List<Room> validRooms = new List<Room>();
 
         foreach (List<Coord> roomRegion in roomRegions) {
-            Debug.Log(roomRegion.Count);
             if (roomRegion.Count < roomThresholdSize) {
                 foreach (Coord tile in roomRegion) {
                     map[tile.tileX, tile.tileY] = 1;
@@ -294,11 +294,9 @@ public class MapGenerator : MonoBehaviour {
 
     void createPassage(Room roomA, Room roomB, Coord tileA, Coord tileB) {
         Room.connectRooms(roomA, roomB);
-        Debug.DrawLine(coordToWorldPoint(tileA), coordToWorldPoint(tileB), Color.green, 5);
-
         List<Coord> line = getLine(tileA, tileB);
         foreach (Coord c in line) {
-            drawCircle(c, 1);
+            drawCircle(c, passageRadius);
         }
     }
 

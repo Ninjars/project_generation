@@ -121,16 +121,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92bb593fb14df9341a1c5bf6d3b018c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 80
-  height: 60
-  seed: 5
+  width: 128
+  height: 72
+  seed: jez
   useRandomSeed: 0
-  randomFillPercent: 45
+  randomFillPercent: 52
   smoothingPasses: 5
   wallThreshold: 5
   voidThreshold: 3
-  wallThresholdSize: 10
-  roomThresholdSize: 10
+  wallThresholdSize: 40
+  roomThresholdSize: 20
+  passageRadius: 1
 --- !u!4 &347016424
 Transform:
   m_ObjectHideFlags: 0
