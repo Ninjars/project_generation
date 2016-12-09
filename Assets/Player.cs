@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
-    Rigidbody rigidbody;
+    Rigidbody body;
     Vector3 velocity;
 
 	// Use this for initialization
 	void Start () {
-        rigidbody = GetComponent<Rigidbody>();
+        body = GetComponent<Rigidbody>();
 	}
 	
 	// Update is called once per frame
@@ -18,6 +18,6 @@ public class Player : MonoBehaviour {
 	}
 
     void FixedUpdate() {
-        rigidbody.MovePosition(rigidbody.position + velocity * Time.fixedDeltaTime);
+        body.MovePosition(body.position + velocity * Time.fixedDeltaTime);
     }
 }
