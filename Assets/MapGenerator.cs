@@ -7,14 +7,16 @@ public class MapGenerator : MonoBehaviour {
     public int width;
     public int height;
 
-
     public string seed;
     public bool useRandomSeed;
 
-    [Range(1, 100)]
-    public int randomFillPercent = 45;
+    [Range(0.4f, 0.57f)]
+    public float randomFillPercent = 0.45f;
+    [Range(0, 10)]
     public int smoothingPasses = 5;
+    [Range(0, 100)]
     public int wallThreshold = 5;
+    [Range(0, 100)]
     public int voidThreshold = 3;
 
     // remove wall regions smaller than this
@@ -36,6 +38,19 @@ public class MapGenerator : MonoBehaviour {
             generateMap();
         }
     }
+
+    /*
+    private void OnDrawGizmos() {
+        if (map != null) {
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    Gizmos.color = map[x, y] == 0 ? Color.white : Color.black;
+                    Gizmos.DrawCube(new Vector3(0.5f + x, 1, 0.5f + y), Vector3.one * 0.5f);
+                }
+            }
+        }
+    }
+    */
 
     struct Coord {
         public int tileX;
@@ -139,8 +154,12 @@ public class MapGenerator : MonoBehaviour {
     }
 
     void randomFillMap() {
-        if (!useRandomSeed && seed != null) {
-            Random.InitState(seed.GetHashCode());
+        bool usingFixedSeed = !useRandomSeed && seed != null;
+        System.Random random;
+        if (usingFixedSeed) {
+            random = new System.Random(seed.GetHashCode());
+        } else {
+            random = new System.Random();
         }
 
         for (int x = 0; x < width; x++) {
@@ -148,7 +167,7 @@ public class MapGenerator : MonoBehaviour {
                 if (x == 0 || x == width - 1 || y == 0 || y == height - 1) {
                     map[x, y] = 1;
                 } else {
-                    map[x, y] = Random.value < randomFillPercent / 100f ? 1 : 0;
+                    map[x, y] = random.NextDouble() < randomFillPercent ? 1 : 0;
                 }
             }
         }
