@@ -12,47 +12,27 @@ public class WallGenExtrusion : MonoBehaviour, Interfaces.IWallGenerator {
         List<int> wallTriangles = new List<int>();
         foreach (List<int> outline in outlines) {
             for (int i = 0; i < outline.Count - 1; i++) {
-                int startIndex = wallVertices.Count;
-                List<Vector3> outlineBox = makeBoxFromLine(vertices[outline[i]], vertices[outline[i + 1]]);
-                wallVertices.AddRange(outlineBox);
+                List<Vector3[]> outlineBox = makeBoxFromLine(vertices[outline[i]], vertices[outline[i + 1]]);
 
-                // wind triangles around the new 6-sided polygon
-                int tl = startIndex + 0;
-                int tr = startIndex + 1;
-                int bl = startIndex + 2;
-                int br = startIndex + 3;
-                int tlo = startIndex + 4;
-                int tro = startIndex + 5;
-                int blo = startIndex + 6;
-                int bro = startIndex + 7;
-
-                // top
-                wallTriangles.AddRange(triangulateSurface(tl, tr, tro, tlo));
-
-                // front
-                wallTriangles.AddRange(triangulateSurface(tro, bro, blo, tlo));
-
-                // bottom
-                wallTriangles.AddRange(triangulateSurface(blo, bro, br, bl));
-
-                // right
-                wallTriangles.AddRange(triangulateSurface(br, bro, tro, tr));
-
-                // back
-                wallTriangles.AddRange(triangulateSurface(tr, tl, bl, br));
-
-                // left
-                wallTriangles.AddRange(triangulateSurface(tl, tlo, blo, bl));
+                foreach (Vector3[] surface in outlineBox) {
+                    int startIndex = wallVertices.Count;
+                    wallVertices.AddRange(surface);
+                    wallTriangles.AddRange(triangulateSurface(startIndex, 0, 1, 2, 3));
+                }
             }
         }
         Mesh mesh = new Mesh();
         mesh.vertices = wallVertices.ToArray();
         mesh.triangles = wallTriangles.ToArray();
+        mesh.RecalculateNormals();
         return mesh;
     }
 
-    private List<Vector3> makeBoxFromLine(Vector3 topLeft, Vector3 topRight) {
-        List<Vector3> box = new List<Vector3>();
+    private int[] triangulateSurface(int offset, int a, int b, int c, int d) {
+        return new int[] { offset+a, offset+b, offset+d, offset+a, offset+d, offset+c };
+    }
+
+    private List<Vector3[]> makeBoxFromLine(Vector3 topLeft, Vector3 topRight) {
         Vector3 bottomLeft = topLeft - Vector3.up * wallHeight;
         Vector3 bottomRight = topRight - Vector3.up * wallHeight;
 
@@ -64,23 +44,39 @@ public class WallGenExtrusion : MonoBehaviour, Interfaces.IWallGenerator {
         Vector3 bottomLeftOffset = bottomLeft + offset;
         Vector3 bottomRightOffset = bottomRight + offset;
 
-        box.Add(topLeft);
-        box.Add(topRight);
-        box.Add(bottomLeft);
-        box.Add(bottomRight);
-        box.Add(topLeftOffset);
-        box.Add(topRightOffset);
-        box.Add(bottomLeftOffset);
-        box.Add(bottomRightOffset);
+        List<Vector3[]> box = new List<Vector3[]>();
+        // back
+        box.Add(copySurfaceVectors(topRight, topLeft, bottomRight, bottomLeft));
+
+        // front
+        box.Add(copySurfaceVectors(topLeftOffset, topRightOffset, bottomLeftOffset, bottomRightOffset));
+
+        // top
+        box.Add(copySurfaceVectors(topLeft, topRight, topLeftOffset, topRightOffset));
+
+        // bottom
+        box.Add(copySurfaceVectors(bottomRight, bottomLeft, bottomRightOffset, bottomLeftOffset));
+
+        // left
+        box.Add(copySurfaceVectors(topLeft, topLeftOffset, bottomLeft, bottomLeftOffset));
+
+        // right
+        box.Add(copySurfaceVectors(topRightOffset, topRight, bottomRightOffset, bottomRight));
+
         return box;
+    }
+
+    private Vector3[] copySurfaceVectors(Vector3 a, Vector3 b, Vector3 c, Vector3 d) {
+        return new Vector3[] {
+            new Vector3(a.x, a.y, a.z),
+            new Vector3(b.x, b.y, b.z),
+            new Vector3(c.x, c.y, c.z),
+            new Vector3(d.x, d.y, d.z)
+        };
     }
 
     private Vector3 getNormal(Vector3 a, Vector3 b, Vector3 c) {
         Vector3 dir = Vector3.Cross(b - a, c - a);
         return Vector3.Normalize(dir);
-    }
-
-    private int[] triangulateSurface(int a, int b, int c, int d) {
-        return new int[] { a, b, d, d, b, c };
     }
 }

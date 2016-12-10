@@ -30,6 +30,7 @@ public class WallGenSimple : MonoBehaviour, Interfaces.IWallGenerator {
         Mesh mesh = new Mesh();
         mesh.vertices = wallVertices.ToArray();
         mesh.triangles = wallTriangles.ToArray();
+        mesh.RecalculateNormals();
         return mesh;
     }
 }
