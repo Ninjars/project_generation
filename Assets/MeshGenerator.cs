@@ -47,30 +47,13 @@ public class MeshGenerator : MonoBehaviour {
     void createWallMesh() {
         List<List<int>> outlines = calculateMeshOutlines();
 
-        List<Vector3> wallVertices = new List<Vector3>();
-        List<int> wallTriangles = new List<int>();
-        foreach (List<int> outline in outlines) {
-            for (int i = 0; i < outline.Count - 1; i++) {
-                int startIndex = wallVertices.Count;
-                wallVertices.Add(vertices[outline[i]]); // left
-                wallVertices.Add(vertices[outline[i + 1]]); // right
-                wallVertices.Add(vertices[outline[i]] - Vector3.up * wallHeight); // bottom left
-                wallVertices.Add(vertices[outline[i + 1]] - Vector3.up * wallHeight); // bottom right
-
-                // winding triangles anticlockwise to view from within
-                wallTriangles.Add(startIndex + 0);
-                wallTriangles.Add(startIndex + 1);
-                wallTriangles.Add(startIndex + 3);
-
-                wallTriangles.Add(startIndex + 3);
-                wallTriangles.Add(startIndex + 2);
-                wallTriangles.Add(startIndex + 0);
-            }
+        Interfaces.IWallGenerator wallGenerator = walls.GetComponent<Interfaces.IWallGenerator>();
+        if (wallGenerator == null) {
+            Debug.LogError("No WallGenerator attached");
+            return;
         }
-
-        Mesh wallMesh = new Mesh();
-        wallMesh.vertices = wallVertices.ToArray();
-        wallMesh.triangles = wallTriangles.ToArray();
+        Mesh wallMesh = wallGenerator.generate(outlines, vertices);
+        
         walls.mesh = wallMesh;
         MeshCollider collider = walls.GetComponent<MeshCollider>();
         if (collider == null) {
