@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MapGenerator : MonoBehaviour {
+public class MapGenSmoothRoom : MonoBehaviour {
 
     public int width;
     public int height;
@@ -25,6 +25,7 @@ public class MapGenerator : MonoBehaviour {
     // remove room regions smaller than this
     public int roomThresholdSize = 25;
 
+    public bool connectRooms = false;
     public int passageRadius = 1;
 
     int[,] map;
@@ -229,10 +230,12 @@ public class MapGenerator : MonoBehaviour {
                 validRooms.Add(new Room(roomRegion, map));
             }
         }
-        validRooms.Sort();
-        validRooms[0].isMainRoom = true;
-        validRooms[0].isAccessible = true;
-        connectClosestRooms(validRooms);
+        if (connectRooms) {
+            validRooms.Sort();
+            validRooms[0].isMainRoom = true;
+            validRooms[0].isAccessible = true;
+           connectClosestRooms(validRooms);
+        }
     }
 
     void connectClosestRooms(List<Room> rooms, bool forceAccessibilityFromMainRoom = false) {
