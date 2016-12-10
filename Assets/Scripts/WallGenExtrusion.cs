@@ -25,55 +25,24 @@ public class WallGenExtrusion : MonoBehaviour, Interfaces.IWallGenerator {
                 int tro = startIndex + 5;
                 int blo = startIndex + 6;
                 int bro = startIndex + 7;
-                
+
                 // top
-                wallTriangles.Add(tl);
-                wallTriangles.Add(tr);
-                wallTriangles.Add(tlo);
-                wallTriangles.Add(tlo);
-                wallTriangles.Add(tr);
-                wallTriangles.Add(tro);
+                wallTriangles.AddRange(triangulateSurface(tl, tr, tro, tlo));
 
                 // front
-                wallTriangles.Add(tro);
-                wallTriangles.Add(bro);
-                wallTriangles.Add(tlo);
-                wallTriangles.Add(tlo);
-                wallTriangles.Add(bro);
-                wallTriangles.Add(blo);
+                wallTriangles.AddRange(triangulateSurface(tro, bro, blo, tlo));
 
                 // bottom
-                wallTriangles.Add(blo);
-                wallTriangles.Add(bro);
-                wallTriangles.Add(br);
-                wallTriangles.Add(br);
-                wallTriangles.Add(bl);
-                wallTriangles.Add(blo);
-
-                // left
-                wallTriangles.Add(blo);
-                wallTriangles.Add(bl);
-                wallTriangles.Add(tlo);
-                wallTriangles.Add(tlo);
-                wallTriangles.Add(bl);
-                wallTriangles.Add(tl);
-
-                // back
-                wallTriangles.Add(tl);
-                wallTriangles.Add(bl);
-                wallTriangles.Add(tr);
-                wallTriangles.Add(tr);
-                wallTriangles.Add(bl);
-                wallTriangles.Add(br);
+                wallTriangles.AddRange(triangulateSurface(blo, bro, br, bl));
 
                 // right
-                wallTriangles.Add(br);
-                wallTriangles.Add(bro);
-                wallTriangles.Add(tr);
-                wallTriangles.Add(tr);
-                wallTriangles.Add(bro);
-                wallTriangles.Add(tro);
+                wallTriangles.AddRange(triangulateSurface(br, bro, tro, tr));
 
+                // back
+                wallTriangles.AddRange(triangulateSurface(tr, tl, bl, br));
+
+                // left
+                wallTriangles.AddRange(triangulateSurface(tl, tlo, blo, bl));
             }
         }
         Mesh mesh = new Mesh();
@@ -109,5 +78,9 @@ public class WallGenExtrusion : MonoBehaviour, Interfaces.IWallGenerator {
     private Vector3 getNormal(Vector3 a, Vector3 b, Vector3 c) {
         Vector3 dir = Vector3.Cross(b - a, c - a);
         return Vector3.Normalize(dir);
+    }
+
+    private int[] triangulateSurface(int a, int b, int c, int d) {
+        return new int[] { a, b, d, d, b, c };
     }
 }
