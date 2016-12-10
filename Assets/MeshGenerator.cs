@@ -14,7 +14,6 @@ public class MeshGenerator : MonoBehaviour {
     List<int> triangles;
 
     Dictionary<int, List<Triangle>> triangleDictionary;
-    List<List<int>> outlines;
     HashSet<int> checkedVertices;
 
     public void generateMesh(int[,] map, float squareSize) {
@@ -23,7 +22,6 @@ public class MeshGenerator : MonoBehaviour {
         vertices = new List<Vector3>();
         triangles = new List<int>();
         triangleDictionary = new Dictionary<int, List<Triangle>>();
-        outlines = new List<List<int>>();
         checkedVertices = new HashSet<int>();
 
         for (int x = 0; x < squareGrid.squares.GetLength(0); x++) {
@@ -47,7 +45,7 @@ public class MeshGenerator : MonoBehaviour {
     }
 
     void createWallMesh() {
-        calculateMeshOutlines();
+        List<List<int>> outlines = calculateMeshOutlines();
 
         List<Vector3> wallVertices = new List<Vector3>();
         List<int> wallTriangles = new List<int>();
@@ -128,28 +126,30 @@ public class MeshGenerator : MonoBehaviour {
         }
     }
 
-    void calculateMeshOutlines() {
+    List<List<int>> calculateMeshOutlines() {
+        List<List<int>> outlines = new List<List<int>>();
         for (int vertexIndex = 0; vertexIndex < vertices.Count; vertexIndex++) {
             if (!checkedVertices.Contains(vertexIndex)) {
                 int newOutlineVertex = getConnectedOutlineVertex(vertexIndex);
                 if (newOutlineVertex != -1) {
                     checkedVertices.Add(newOutlineVertex);
                     List<int> newOutline = new List<int>();
+                    followOutline(newOutline, newOutlineVertex);
                     newOutline.Add(vertexIndex);
                     outlines.Add(newOutline);
-                    followOutline(newOutlineVertex, outlines.Count - 1);
-                    outlines[outlines.Count - 1].Add(vertexIndex);
                 }
             }
         }
+        return outlines;
     }
 
-    void followOutline(int vertexIndex, int outlineIndex) {
-        outlines[outlineIndex].Add(vertexIndex);
+    void followOutline(List<int> outline, int vertexIndex) {
+        // recursively follow vertexes around the outside of a mesh
+        outline.Add(vertexIndex);
         checkedVertices.Add(vertexIndex);
         int nextVertexIndex = getConnectedOutlineVertex(vertexIndex);
         if (nextVertexIndex != -1) {
-            followOutline(nextVertexIndex, outlineIndex);
+            followOutline(outline, nextVertexIndex);
         }
     }
 
