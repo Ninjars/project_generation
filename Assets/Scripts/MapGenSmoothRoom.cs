@@ -14,9 +14,9 @@ public class MapGenSmoothRoom : MonoBehaviour {
     public float randomFillPercent = 0.45f;
     [Range(0, 10)]
     public int smoothingPasses = 5;
-    [Range(0, 100)]
+    [Range(0, 8)]
     public int wallThreshold = 5;
-    [Range(0, 100)]
+    [Range(0, 8)]
     public int voidThreshold = 3;
 
     // remove wall regions smaller than this
