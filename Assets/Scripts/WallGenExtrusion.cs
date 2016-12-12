@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class WallGenExtrusion : MonoBehaviour, Interfaces.IWallGenerator {
+    private static System.Random random = new System.Random();
+
     public float wallHeight = 5;
     public float wallDepthVariance = 0.25f;
     public float minWallDepth = 0.5f;
-
-    private static System.Random random = new System.Random();
 
     public Mesh generate(List<List<int>> outlines, List<Vector3> vertices) {
         List<Vector3> wallVertices = new List<Vector3>();
@@ -37,45 +37,63 @@ public class WallGenExtrusion : MonoBehaviour, Interfaces.IWallGenerator {
         return new int[] { offset+a, offset+b, offset+d, offset+a, offset+d, offset+c };
     }
 
-    private List<Vector3[]> makeBoxFromLine(Vector3 topLeft, Vector3 topRight, Vector3 neighbourLeft, Vector3 neighbourRight) {
-        Vector3 bottomLeft = topLeft - Vector3.up * wallHeight;
-        Vector3 bottomRight = topRight - Vector3.up * wallHeight;
+    private List<Vector3[]> makeBoxFromLine(Vector3 parentTopLeft, Vector3 parentTopRight, Vector3 neighbourLeft, Vector3 neighbourRight) {
+        Vector3 parentBottomLeft = parentTopLeft - Vector3.up * wallHeight;
+        Vector3 parentBottomRight = parentTopRight - Vector3.up * wallHeight;
 
         // find normal of adjacent line
-        Vector3 normalPrevious = getNormal(neighbourLeft, topLeft, bottomLeft);
-        Vector3 normalNext = getNormal(topRight, neighbourRight, bottomRight);
+        Vector3 normalPrevious = getNormal(neighbourLeft, parentTopLeft, parentBottomLeft);
+        Vector3 normalNext = getNormal(parentTopRight, neighbourRight, parentBottomRight);
+        Vector3 normal = getNormal(parentTopLeft, parentTopRight, parentBottomLeft);
 
-        float offset = minWallDepth + (float) random.NextDouble() * wallDepthVariance;
+        float offset = minWallDepth + (float)random.NextDouble() * wallDepthVariance;
+        float wallHeightVal = wallHeight / 2f + (wallHeight / 2f * (float) random.NextDouble());
+        Vector3[] vertices = createVerticesForExtrusion(parentTopLeft, parentTopRight, Vector3.Normalize(normalPrevious + normal), Vector3.Normalize(normalNext + normal), wallHeightVal, offset);
 
-        // surface is made of 2 triangles, but we are assuming that it is planar and so both share same normal
-        Vector3 normal = getNormal(topLeft, topRight, bottomLeft);
-        Vector3 offsetLeft = Vector3.Normalize(normal + normalPrevious) * offset;
-        Vector3 offsetRight = Vector3.Normalize(normal + normalNext) * offset;
+        List<Vector3[]> surfaces = getSurfacesFromVertices(vertices[0], vertices[1], vertices[2], vertices[3], vertices[4], vertices[5], vertices[6], vertices[7]);
+
+        return surfaces;
+    }
+
+    private Vector3[] createVerticesForExtrusion(Vector3 topLeft, Vector3 topRight, Vector3 normalLeft, Vector3 normalRight, float height, float offset) {
+        Vector3 offsetLeft = normalLeft * offset;
+        Vector3 offsetRight = normalRight * offset;
+
+        Vector3 bottomLeft = topLeft - Vector3.up * height;
+        Vector3 bottomRight = topRight - Vector3.up * height;
+        
         Vector3 topLeftOffset = topLeft + offsetLeft;
         Vector3 topRightOffset = topRight + offsetRight;
         Vector3 bottomLeftOffset = bottomLeft + offsetLeft;
         Vector3 bottomRightOffset = bottomRight + offsetRight;
 
-        List<Vector3[]> box = new List<Vector3[]>();
+        return new Vector3[] {
+                topLeft, topRight, bottomRight, bottomLeft, 
+                topLeftOffset, topRightOffset, bottomRightOffset, bottomLeftOffset
+            };
+    }
+
+    private List<Vector3[]> getSurfacesFromVertices(Vector3 topLeft, Vector3 topRight, Vector3 bottomRight, Vector3 bottomLeft, 
+                                                    Vector3 topLeftOffset, Vector3 topRightOffset, Vector3 bottomRightOffset, Vector3 bottomLeftOffset) {
+        List<Vector3[]> surfaces = new List<Vector3[]>();
         // back
-        box.Add(copySurfaceVectors(topRight, topLeft, bottomRight, bottomLeft));
+        surfaces.Add(copySurfaceVectors(topRight, topLeft, bottomRight, bottomLeft));
 
         // front
-        box.Add(copySurfaceVectors(topLeftOffset, topRightOffset, bottomLeftOffset, bottomRightOffset));
+        surfaces.Add(copySurfaceVectors(topLeftOffset, topRightOffset, bottomLeftOffset, bottomRightOffset));
 
         // top
-        box.Add(copySurfaceVectors(topLeft, topRight, topLeftOffset, topRightOffset));
+        surfaces.Add(copySurfaceVectors(topLeft, topRight, topLeftOffset, topRightOffset));
 
         // bottom
-        box.Add(copySurfaceVectors(bottomRight, bottomLeft, bottomRightOffset, bottomLeftOffset));
+        surfaces.Add(copySurfaceVectors(bottomRight, bottomLeft, bottomRightOffset, bottomLeftOffset));
 
         // left
-        box.Add(copySurfaceVectors(topLeft, topLeftOffset, bottomLeft, bottomLeftOffset));
+        surfaces.Add(copySurfaceVectors(topLeft, topLeftOffset, bottomLeft, bottomLeftOffset));
 
         // right
-        box.Add(copySurfaceVectors(topRightOffset, topRight, bottomRightOffset, bottomRight));
-
-        return box;
+        surfaces.Add(copySurfaceVectors(topRightOffset, topRight, bottomRightOffset, bottomRight));
+        return surfaces;
     }
 
     private Vector3[] copySurfaceVectors(Vector3 a, Vector3 b, Vector3 c, Vector3 d) {
