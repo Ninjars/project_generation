@@ -28,7 +28,7 @@ public sealed class GOAPAgent : MonoBehaviour {
         loadActions();
     }
 
-    void Update() {
+    void FixedUpdate() {
         stateMachine.Update(this.gameObject);
     }
 
