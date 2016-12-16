@@ -106,6 +106,7 @@ public sealed class GOAPAgent : MonoBehaviour {
 
             GOAPAction action = currentActions.Peek();
             if (action.isDone()) {
+                Debug.Log("action completed: " + action);
                 currentActions.Dequeue();
             }
 

@@ -91,7 +91,6 @@ public class GOAPPlanner {
 
                 // apply the action's effects to the parent state
                 HashSet<KeyValuePair<string, object>> currentState = populateState(parent.state, action.Effects);
-                // Debug.Log(GoapAgent.prettyPrint(currentState));
                 Node node = new Node(parent, parent.runningCost + action.cost, currentState, action);
 
                 if (goalInState(goal, currentState)) {
