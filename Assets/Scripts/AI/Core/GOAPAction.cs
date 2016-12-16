@@ -7,7 +7,7 @@ public abstract class GOAPAction : MonoBehaviour {
     private HashSet<KeyValuePair<string, object>> effects;
 
     private bool inRange = false;
-
+    private float maxTriggerRange = 1f;
     public float cost = 1f;
 
     public GameObject target;
@@ -35,6 +35,14 @@ public abstract class GOAPAction : MonoBehaviour {
 
     public bool isInRange() {
         return inRange;
+    }
+
+    public void setMaxTriggerRange(float range) {
+        maxTriggerRange = range;
+    }
+
+    public float getMaxTriggerRange() {
+        return maxTriggerRange;
     }
 
     public void setInRange(bool val) {
