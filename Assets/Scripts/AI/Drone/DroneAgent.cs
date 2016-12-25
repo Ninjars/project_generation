@@ -8,6 +8,11 @@ public class DroneAgent : MobileAgent {
     public GameObject homeResourceStore;
     public int resourceCapacity = 10;
     public int currentResourceCount;
+	public float harvestTime = 1f;
+
+	private enum HarvestState { NONE, HARVESTING };
+
+	private HarvestState harvestState = HarvestState.NONE;
 
 	void Start () {
         setSpeed(10f);
@@ -29,17 +34,30 @@ public class DroneAgent : MobileAgent {
         return currentResourceCount;
     }
 
-    internal bool gainResources(GameObject target) {
-        // todo: possibly impact on resourse collection target, 
-        //       eg cause damage or reduce remaining resource count
-        if (currentResourceCount < resourceCapacity) {
-            currentResourceCount++;
-            return true;
-        } else {
-            currentResourceCount = resourceCapacity;
-            return false;
+	internal bool harvest(GameObject target, IActionPerformed callback) {
+		if (isFullOfResources ()) {
+			Debug.Log ("harvest() : full");
+			return false;
+		}
+		switch (harvestState) {
+			case HarvestState.NONE:
+				harvestState = HarvestState.HARVESTING;
+				StartCoroutine (performHarvest ());
+				return true;
+			case HarvestState.HARVESTING:
+				return true;
+			default:
+				return false;
         }
-    }
+	}
+
+	internal IEnumerator performHarvest() {
+		yield return new WaitForSeconds(harvestTime);
+		// todo: possibly impact on resourse collection target, 
+		//       eg cause damage or reduce remaining resource count
+		currentResourceCount++;
+		harvestState = HarvestState.NONE;
+	}
 
     internal bool depositResources(GameObject target) {
         // todo: add resources to target
@@ -48,7 +66,7 @@ public class DroneAgent : MobileAgent {
     }
 
     internal bool isFullOfResources() {
-        return currentResourceCount == resourceCapacity;
+        return currentResourceCount >= resourceCapacity;
     }
 
     /*
@@ -59,6 +77,7 @@ public class DroneAgent : MobileAgent {
 	public override Dictionary<string, object> getWorldState() {
 		Dictionary<string, object> worldData = new Dictionary<string, object>();
         worldData["supplyResources"] = false; // the 'false' here could be based on the resource store's values instead
+		worldData["collectedResources"] = isFullOfResources();
         return worldData;
     }
 }
