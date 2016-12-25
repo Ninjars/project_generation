@@ -10,6 +10,9 @@ public class DroneAgent : MobileAgent {
     public int currentResourceCount;
 	public float harvestTime = 1f;
 
+	internal static string PLAN_DELIVER = "supplyResources";
+	internal static string PLAN_COLLECTED = "collectedResources";
+
 	private enum HarvestState { NONE, HARVESTING };
 
 	private HarvestState harvestState = HarvestState.NONE;
@@ -21,7 +24,7 @@ public class DroneAgent : MobileAgent {
 
 	public override Dictionary<string, object> createGoalState() {
 		Dictionary<string, object> goal = new Dictionary<string, object>();
-        goal["supplyResources"] = true;
+        goal[PLAN_DELIVER] = true;
         return goal;
     }
 
@@ -76,8 +79,8 @@ public class DroneAgent : MobileAgent {
      */
 	public override Dictionary<string, object> getWorldState() {
 		Dictionary<string, object> worldData = new Dictionary<string, object>();
-        worldData["supplyResources"] = false; // the 'false' here could be based on the resource store's values instead
-		worldData["collectedResources"] = isFullOfResources();
+		worldData[PLAN_DELIVER] = false; // the 'false' here could be based on the resource store's values instead
+		worldData[PLAN_COLLECTED] = isFullOfResources();
         return worldData;
     }
 }

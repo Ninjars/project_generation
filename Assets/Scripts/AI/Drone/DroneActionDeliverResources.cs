@@ -7,8 +7,8 @@ public class DroneActionDeliverResources : GOAPAction {
     private bool completed = false;
 
     public DroneActionDeliverResources() {
-        addPrecondition("possessResources", true);
-        addEffect("supplyResources", true);
+		addPrecondition(DroneAgent.PLAN_COLLECTED, true);
+		addEffect(DroneAgent.PLAN_DELIVER, true);
         cost = 100f;
     }
 

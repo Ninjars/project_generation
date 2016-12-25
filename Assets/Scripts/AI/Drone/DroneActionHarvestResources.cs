@@ -7,7 +7,7 @@ public class DroneActionHarvestResources : GOAPAction, IActionPerformed {
     private bool completed = false;
 
 	public DroneActionHarvestResources() {
-        addEffect("collectedResources", true);
+		addEffect(DroneAgent.PLAN_COLLECTED, true);
         cost = 100f;
     }
 
