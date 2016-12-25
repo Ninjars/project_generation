@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44658053, g: 0.49641287, b: 0.57481724, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657987, g: 0.49641222, b: 0.57481617, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -229,8 +229,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   homeResourceStore: {fileID: 2006435174}
-  resourceCapacity: 10
+  resourceCapacity: 3
   currentResourceCount: 0
+  harvestTime: 1
 --- !u!114 &159487133
 MonoBehaviour:
   m_ObjectHideFlags: 0
