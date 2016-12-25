@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 public interface IGOAP {
 
-    HashSet<KeyValuePair<string, object>> getWorldState();
+	Dictionary<string, object> getWorldState();
 
-    HashSet<KeyValuePair<string, object>> createGoalState();
+	Dictionary<string, object> createGoalState();
 
-    void planFailed(HashSet<KeyValuePair<string, object>> failedGoal);
+	void planFailed(Dictionary<string, object> failedGoal);
 
-    void planFound(HashSet<KeyValuePair<string, object>> goal, Queue<GOAPAction> actions);
+	void planFound(Dictionary<string, object> goal, Queue<GOAPAction> actions);
 
     void actionsFinished();
 

@@ -57,8 +57,8 @@ public sealed class GOAPAgent : MonoBehaviour {
     private void createIdleState() {
         idleState = (fsm, obj) => {
 
-            HashSet<KeyValuePair<string, object>> worldState = dataProvider.getWorldState();
-            HashSet<KeyValuePair<string, object>> goal = dataProvider.createGoalState();
+			Dictionary<string, object> worldState = dataProvider.getWorldState();
+			Dictionary<string, object> goal = dataProvider.createGoalState();
 
             Queue<GOAPAction> plan = planner.plan(gameObject, availableActions, worldState, goal);
             if (plan != null) {
@@ -77,7 +77,6 @@ public sealed class GOAPAgent : MonoBehaviour {
 
     private void createMoveToState() {
         moveToState = (fsm, gameObject) => {
-
             GOAPAction action = currentActions.Peek();
             if (action.requiresInRange() && action.target == null) {
                 fsm.popState();
@@ -89,7 +88,6 @@ public sealed class GOAPAgent : MonoBehaviour {
             if (dataProvider.moveAgent(action)) {
                 fsm.popState();
             }
-
         };
     }
 
@@ -106,7 +104,7 @@ public sealed class GOAPAgent : MonoBehaviour {
 
             GOAPAction action = currentActions.Peek();
             if (action.isDone()) {
-                Debug.Log("action completed: " + action);
+//                Debug.Log("action completed: " + action);
                 currentActions.Dequeue();
             }
 

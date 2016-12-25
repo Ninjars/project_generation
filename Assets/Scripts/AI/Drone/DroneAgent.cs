@@ -14,9 +14,9 @@ public class DroneAgent : MobileAgent {
         health = 1;
     }
 
-    public override HashSet<KeyValuePair<string, object>> createGoalState() {
-        HashSet<KeyValuePair<string, object>> goal = new HashSet<KeyValuePair<string, object>>();
-        goal.Add(new KeyValuePair<string, object>("supplyResources", true));
+	public override Dictionary<string, object> createGoalState() {
+		Dictionary<string, object> goal = new Dictionary<string, object>();
+        goal["supplyResources"] = true;
         return goal;
     }
 
@@ -56,9 +56,9 @@ public class DroneAgent : MobileAgent {
      * could be supplemented by the base class providing some global values that 
      * agents then add to, to create balance of individual and group goals
      */
-    public override HashSet<KeyValuePair<string, object>> getWorldState() {
-        HashSet<KeyValuePair<string, object>> worldData = new HashSet<KeyValuePair<string, object>>();
-        worldData.Add(new KeyValuePair<string, object>("supplyResources", false)); // the 'false' here could be based on the resource store's values instead
+	public override Dictionary<string, object> getWorldState() {
+		Dictionary<string, object> worldData = new Dictionary<string, object>();
+        worldData["supplyResources"] = false; // the 'false' here could be based on the resource store's values instead
         return worldData;
     }
 }

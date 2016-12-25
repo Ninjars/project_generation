@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public abstract class GOAPAction : MonoBehaviour {
 
-    private HashSet<KeyValuePair<string, object>> preconditions;
-    private HashSet<KeyValuePair<string, object>> effects;
+	private Dictionary<string, object> preconditions;
+	private Dictionary<string, object> effects;
 
     private bool inRange = false;
     private float maxTriggerRange = 1f;
@@ -13,8 +13,8 @@ public abstract class GOAPAction : MonoBehaviour {
     public GameObject target;
 
     public GOAPAction() {
-        preconditions = new HashSet<KeyValuePair<string, object>>();
-        effects = new HashSet<KeyValuePair<string, object>>();
+		preconditions = new Dictionary<string, object>();
+		effects = new Dictionary<string, object>();
     }
 
     public void doReset() {
@@ -49,45 +49,37 @@ public abstract class GOAPAction : MonoBehaviour {
         inRange = val;
     }
 
-    public void addPrecondition(string key, object value) {
-        preconditions.Add(new KeyValuePair<string, object>(key, value));
+	public void addPrecondition(string key, object value) {
+		preconditions.Add(key, value);
     }
 
     public void removePrecondition(string key) {
-        KeyValuePair<string, object> remove = default(KeyValuePair<string, object>);
-        foreach (KeyValuePair<string, object> kvp in preconditions) {
-            if (kvp.Key.Equals(key)) {
-                remove = kvp;
-            }
-            if (!default(KeyValuePair<string, object>).Equals(remove)) {
-                preconditions.Remove(remove);
-            }
-        }
+		if (preconditions.ContainsKey (key)) {
+			preconditions.Remove (key);
+		}
     }
 
-    public void addEffect(string key, object value) {
-        effects.Add(new KeyValuePair<string, object>(key, value));
+	public void addEffect(string key, object value) {
+		if (effects.ContainsKey(key)) {
+			effects [key] = value;
+		} else {
+			effects.Add(key, value);
+		}
     }
 
-    public void removeEffect(string key) {
-        KeyValuePair<string, object> remove = default(KeyValuePair<string, object>);
-        foreach (KeyValuePair<string, object> kvp in effects) {
-            if (kvp.Key.Equals(key)) {
-                remove = kvp;
-            }
-            if (!default(KeyValuePair<string, object>).Equals(remove)) {
-                effects.Remove(remove);
-            }
-        }
+	public void removeEffect(string key) {
+		if (effects.ContainsKey (key)) {
+			effects.Remove (key);
+		}
     }
 
-    public HashSet<KeyValuePair<string, object>> Preconditions {
+    public Dictionary<string, object> Preconditions {
         get {
             return preconditions;
         }
     }
 
-    public HashSet<KeyValuePair<string, object>> Effects {
+    public Dictionary<string, object> Effects {
         get {
             return effects;
         }

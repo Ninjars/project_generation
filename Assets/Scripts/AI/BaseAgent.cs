@@ -9,13 +9,13 @@ public abstract class BaseAgent : MonoBehaviour, IGOAP {
 
     public abstract void receiveDamage(int damage);
 
-    public abstract HashSet<KeyValuePair<string, object>> createGoalState();
+	public abstract Dictionary<string, object> createGoalState();
 
-    public void planFailed(HashSet<KeyValuePair<string, object>> failedGoal) {
+	public void planFailed(Dictionary<string, object> failedGoal) {
 
     }
 
-    public void planFound(HashSet<KeyValuePair<string, object>> goal, Queue<GOAPAction> action) {
+	public void planFound(Dictionary<string, object> goal, Queue<GOAPAction> action) {
 
     }
 
@@ -27,7 +27,7 @@ public abstract class BaseAgent : MonoBehaviour, IGOAP {
 
     }
 
-    public abstract HashSet<KeyValuePair<string, object>> getWorldState();
+	public abstract Dictionary<string, object> getWorldState();
 
     public abstract bool moveAgent(GOAPAction nextAction);
 }
