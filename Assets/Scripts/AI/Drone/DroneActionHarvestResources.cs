@@ -26,8 +26,26 @@ public class DroneActionHarvestResources : GOAPAction, IActionPerformed {
     }
 
     public override bool checkProceduralPrecondition(GameObject agent) {
-        target = GameObject.Find("Resource");
+        target = updateTarget(target);
         return target != null;
+    }
+
+    private GameObject updateTarget(GameObject currentTarget) {
+        List<GameObject> allTargets = GlobalRegister.resources;
+        GameObject nearest = currentTarget;
+        float nearestDistance = float.MaxValue; // todo: max value for search range?
+        if (currentTarget != null) {
+            nearestDistance = (nearest.transform.position - transform.position).sqrMagnitude;
+        }
+
+        foreach (GameObject t in allTargets) {
+            float sqrDistance = (t.transform.position - transform.position).sqrMagnitude;
+            if (sqrDistance < nearestDistance) {
+                nearest = t;
+                nearestDistance = sqrDistance;
+            }
+        }
+        return nearest;
     }
 
 	public override bool perform(GameObject agent) {
