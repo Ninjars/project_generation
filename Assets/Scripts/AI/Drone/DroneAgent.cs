@@ -37,15 +37,18 @@ public class DroneAgent : MobileAgent {
         return currentResourceCount;
     }
 
-	internal bool harvest(GameObject target, IActionPerformed callback) {
+    internal bool harvest(GameObject target, IActionPerformed callback) {
+        if (target == null) {
+            Debug.Log ("harvest() : null target");
+            return false;
+        }
 		if (isFullOfResources ()) {
-			Debug.Log ("harvest() : full");
 			return false;
-		}
-		switch (harvestState) {
+        }
+        switch (harvestState) {
 			case HarvestState.NONE:
 				harvestState = HarvestState.HARVESTING;
-				StartCoroutine (performHarvest ());
+				StartCoroutine (performHarvest (target));
 				return true;
 			case HarvestState.HARVESTING:
 				return true;
@@ -54,11 +57,26 @@ public class DroneAgent : MobileAgent {
         }
 	}
 
-	internal IEnumerator performHarvest() {
+    internal IEnumerator performHarvest(GameObject target) {
 		yield return new WaitForSeconds(harvestTime);
 		// todo: possibly impact on resourse collection target, 
 		//       eg cause damage or reduce remaining resource count
-		currentResourceCount++;
+        if (target == null) {
+            // target may have been destroyed
+            harvestState = HarvestState.NONE;
+            yield break;
+        }
+        Resource resource = target.GetComponent<Resource>();
+        if (resource == null) {
+            Debug.Log("performHarvest: DroneAgent harvest target doesn't have a Resource script component! This case is unhandled!");
+        } else {
+            int harvestedAmount = resource.harvest(1);
+            if (harvestedAmount == 0) {
+                // todo: do we need to handle this here, or in the action itself?
+            } else {
+                currentResourceCount += harvestedAmount;
+            }
+        }
 		harvestState = HarvestState.NONE;
 	}
 
