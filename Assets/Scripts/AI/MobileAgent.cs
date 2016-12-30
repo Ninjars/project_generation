@@ -5,7 +5,6 @@ using UnityEngine;
 public abstract class MobileAgent : BaseAgent {
 
     protected int speed;
-    private float initialSpeed;
     private float acceleration;
     private float terminalSpeed;
     private Vector3 currentVelocity = Vector3.zero;
@@ -13,7 +12,6 @@ public abstract class MobileAgent : BaseAgent {
 
     public void setSpeed(float val) {
         terminalSpeed = val / 10f;
-        initialSpeed = (val / 10f) / 2f;
         acceleration = (val / 10f) / 2f;
         Debug.Log("set speed " + val + " " + terminalSpeed + " " + acceleration);
     }

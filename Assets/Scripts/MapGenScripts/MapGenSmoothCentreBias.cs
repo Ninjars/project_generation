@@ -111,17 +111,6 @@ public class MapGenSmoothCentreBias : MonoBehaviour {
     }
 
     void generateMap() {
-        int[,] map = randomFillMap();
-        for (int i = 0; i < smoothingPasses; i++) {
-            map = smoothMap(map);
-        }
-        map = processRooms(map);
-
-        MeshGenerator meshGen = GetComponent<MeshGenerator>();
-        meshGen.generateMesh(map, 1);
-    }
-
-    int[,] randomFillMap() {
         bool usingFixedSeed = !useRandomSeed && seed != null;
         System.Random random;
         if (usingFixedSeed) {
@@ -130,6 +119,20 @@ public class MapGenSmoothCentreBias : MonoBehaviour {
             random = new System.Random();
         }
 
+        int[,] map = randomFillMap(random);
+        for (int i = 0; i < smoothingPasses; i++) {
+            map = smoothMap(map);
+        }
+        map = processRooms(map);
+
+        MeshGenerator meshGen = GetComponent<MeshGenerator>();
+        meshGen.generateMesh(map, 1);
+
+        PopulateMap mapPopulator = GetComponent<PopulateMap>();
+        mapPopulator.populateMap(random, map);
+    }
+
+    int[,] randomFillMap(System.Random random) {
         int[,] map = new int[width, height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
