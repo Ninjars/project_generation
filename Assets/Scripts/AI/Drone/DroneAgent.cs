@@ -3,19 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DroneAgent : MobileAgent {
+public class DroneAgent : MobileAgent, Interfaces.IHarvester {
 
-    public GameObject homeResourceStore;
+    public GameObject homeLocation;
     public int resourceCapacity = 10;
     public int currentResourceCount;
 	public float harvestTime = 1f;
 
 	internal static string PLAN_DELIVER = "supplyResources";
-	internal static string PLAN_COLLECTED = "collectedResources";
+    internal static string PLAN_COLLECTED = "collectedResources";
 
 	private enum HarvestState { NONE, HARVESTING };
-
 	private HarvestState harvestState = HarvestState.NONE;
+
+    private bool decomissioned = false;
 
 	void Start () {
         setSpeed(10f);
@@ -31,6 +32,19 @@ public class DroneAgent : MobileAgent {
     public override void receiveDamage(int damage) {
         health -= damage;
         // todo: handle death
+    }
+
+    public void setHomeLocation(GameObject location) {
+        Interfaces.IResourceStockpile stockpile = location.GetComponent<Interfaces.IResourceStockpile>();
+        if (stockpile == null) {
+            throw new ArgumentException("DroneAgent sanity check: setting location as a non-stockpile object; this is unsupported");
+        }
+        homeLocation = location;
+    }
+
+    public void decomission() {
+        // todo: add decomission action
+        this.decomissioned = true;
     }
 
     public int getCurrentResourceCount() {
@@ -81,9 +95,12 @@ public class DroneAgent : MobileAgent {
 	}
 
     internal bool depositResources(GameObject target) {
-        // todo: add resources to target
-        currentResourceCount = 0;
-        return true;
+        Interfaces.IResourceStockpile stockpile = target.GetComponent<Interfaces.IResourceStockpile>();
+        if (stockpile == null) {
+            throw new ArgumentException("DroneAgent sanity check: depositResources targetting a non-stockpile object; this is unsupported");
+        }
+        currentResourceCount = stockpile.deposit(gameObject, currentResourceCount);
+        return currentResourceCount == 0;
     }
 
     internal bool isFullOfResources() {
@@ -97,8 +114,20 @@ public class DroneAgent : MobileAgent {
      */
 	public override Dictionary<string, object> getWorldState() {
 		Dictionary<string, object> worldData = new Dictionary<string, object>();
-		worldData[PLAN_DELIVER] = false; // the 'false' here could be based on the resource store's values instead
+		worldData[PLAN_DELIVER] = false;
 		worldData[PLAN_COLLECTED] = isFullOfResources();
         return worldData;
+    }
+
+    public GameObject getResourceTargetLocation() {
+        Interfaces.IResourceStockpile stockpile = homeLocation == null ? null : homeLocation.GetComponent<Interfaces.IResourceStockpile>();
+        if (stockpile == null) {
+            throw new ArgumentException("DroneAgent sanity check: depositResources targetting a non-stockpile object; this is unsupported");
+        }
+        return stockpile.getHarvesterTarget(gameObject);
+    }
+
+    public int getResourcesNeeded() {
+        return resourceCapacity - currentResourceCount;
     }
 }

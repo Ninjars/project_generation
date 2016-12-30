@@ -65,4 +65,8 @@ public class Resource : MonoBehaviour {
         }
         return returnVal;
     }
+
+    public bool doesRegen() {
+        return amountGainedPerRegen > 0 && secondsPerRegen > 0;
+    }
 }
