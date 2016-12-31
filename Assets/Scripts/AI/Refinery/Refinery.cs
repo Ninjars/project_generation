@@ -40,7 +40,7 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile {
             // check if enough time has elapsed to perform a refine action
             if (refineTimer >= secondsPerRefine) {
                 currentRawResources -= refineResourceCost;
-                maxRefinedResources++;
+                currentRefinedResources++;
                 refineTimer -= secondsPerRefine;
             }
         }
