@@ -28,7 +28,7 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile {
 	
 	void Update () {
         // check if new harvester should be created
-        if (!doesHarvesterCountExceedTargetRatio()) {
+        if (requireAdditionalHarvesters()) {
             createNewHarvester();
         }
 
@@ -73,6 +73,10 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile {
             currentRawResources = maxRawResources;
             return count;
         }
+    }
+
+    public void removeHarvester(GameObject harvester) {
+        managedHarvesters.Remove(harvester);
     }
 
     public GameObject getHarvesterTarget(GameObject harvester) {
@@ -159,7 +163,7 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile {
             return;
         }
         if (doesHarvesterCountExceedTargetRatio()) {
-            Debug.Log("RefineryAgent marking drone for decomission");
+            Debug.Log("RefineryAgent marking drone for decommission: " + managedHarvesters.Count + " vs " + getResourceInRangeCount());
             Interfaces.IHarvester harvester = depositor.GetComponent<Interfaces.IHarvester>();
             if (harvester == null) {
                 Debug.Log("RefineryAgent is managing a harvester that isn't an IHarvester! Sanity check!!");
@@ -171,8 +175,14 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile {
     }
 
     private bool doesHarvesterCountExceedTargetRatio() {
-        return managedHarvesters.Count <= 1 ? false :
-            (float) managedHarvesters.Count / (float)getResourceInRangeCount() >= targetHarvesterToResourcePointRatio;
+        return managedHarvesters.Count == 0 ? false :
+            (float) managedHarvesters.Count / (float)getResourceInRangeCount() > targetHarvesterToResourcePointRatio;
+    }
+
+    private bool requireAdditionalHarvesters() {
+        int resourceCount = getResourceInRangeCount();
+        return managedHarvesters.Count == 0 && resourceCount > 0 ? true :
+            (float) managedHarvesters.Count / (float)resourceCount < targetHarvesterToResourcePointRatio;
     }
 
     private int getResourceInRangeCount() {
