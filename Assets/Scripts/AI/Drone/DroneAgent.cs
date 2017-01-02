@@ -24,6 +24,19 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
         health = 1;
     }
 
+    void OnDrawGizmos() {
+        GameObject target = GetComponent<DroneActionHarvestResources>().target;
+        if (target != null) {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(gameObject.transform.position, target.transform.position);
+        }
+        target = GetComponent<DroneActionDeliverResources>().target;
+        if (target != null) {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(gameObject.transform.position, target.transform.position);
+        }
+    }
+
 	public override Dictionary<string, object> createGoalState() {
 		Dictionary<string, object> goal = new Dictionary<string, object>();
         goal[PLAN_DELIVER] = true;
