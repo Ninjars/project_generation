@@ -41,6 +41,7 @@ GameObject:
   - component: {fileID: 114692781777720662}
   - component: {fileID: 114832259355495480}
   - component: {fileID: 114724027632595392}
+  - component: {fileID: 114865990213456064}
   m_Layer: 0
   m_Name: Drone
   m_TagString: Untagged
@@ -135,7 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b6433b0d892ffe40b879445bcaa5561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  depositLocation: {fileID: 0}
+  homeLocation: {fileID: 0}
   resourceCapacity: 3
   currentResourceCount: 0
   harvestTime: 1
@@ -164,6 +165,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cost: 100
+  target: {fileID: 0}
+--- !u!114 &114865990213456064
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1611962163659788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e376a2a93a7e94fbca3d1df513a15b89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cost: 50
   target: {fileID: 0}
 --- !u!135 &135928710845506882
 SphereCollider:

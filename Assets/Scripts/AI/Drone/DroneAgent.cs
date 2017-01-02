@@ -12,11 +12,12 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
 
 	internal static string PLAN_DELIVER = "supplyResources";
     internal static string PLAN_COLLECTED = "collectedResources";
+    internal static string PLAN_DECOMMISSION = "decommission";
 
 	private enum HarvestState { NONE, HARVESTING };
 	private HarvestState harvestState = HarvestState.NONE;
 
-    private bool decomissioned = false;
+    private bool decommissioned = false;
 
 	void Start () {
         setSpeed(10f);
@@ -26,6 +27,7 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
 	public override Dictionary<string, object> createGoalState() {
 		Dictionary<string, object> goal = new Dictionary<string, object>();
         goal[PLAN_DELIVER] = true;
+        goal[PLAN_DECOMMISSION] = true;
         return goal;
     }
 
@@ -42,9 +44,8 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
         homeLocation = location;
     }
 
-    public void decomission() {
-        // todo: add decomission action
-        this.decomissioned = true;
+    public void decommission() {
+        this.decommissioned = true;
     }
 
     public int getCurrentResourceCount() {
@@ -114,8 +115,9 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
      */
 	public override Dictionary<string, object> getWorldState() {
 		Dictionary<string, object> worldData = new Dictionary<string, object>();
-		worldData[PLAN_DELIVER] = false;
-		worldData[PLAN_COLLECTED] = isFullOfResources();
+        worldData[PLAN_DELIVER] = false;
+        worldData[PLAN_COLLECTED] = isFullOfResources();
+		worldData[PLAN_DECOMMISSION] = false;
         return worldData;
     }
 
@@ -129,5 +131,9 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
 
     public int getResourcesNeeded() {
         return resourceCapacity - currentResourceCount;
+    }
+
+    public bool isDecommissioned() {
+        return decommissioned;
     }
 }

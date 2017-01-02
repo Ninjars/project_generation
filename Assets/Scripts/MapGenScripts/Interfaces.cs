@@ -11,12 +11,13 @@ public class Interfaces : MonoBehaviour {
 
     public interface IHarvester {
         void setHomeLocation(GameObject resourceDeposit);
-        void decomission();
+        void decommission();
         int getResourcesNeeded();
     }
 
     public interface IResourceStockpile {
         int deposit(GameObject depositor, int count); // returns amount unable to deposit
         GameObject getHarvesterTarget(GameObject harvester);
+        void removeHarvester(GameObject harvester);
     }
 }

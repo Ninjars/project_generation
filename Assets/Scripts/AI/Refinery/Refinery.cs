@@ -165,7 +165,7 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile {
                 Debug.Log("RefineryAgent is managing a harvester that isn't an IHarvester! Sanity check!!");
                 return;
             } else {
-                harvester.decomission();
+                harvester.decommission();
             }
         }
     }

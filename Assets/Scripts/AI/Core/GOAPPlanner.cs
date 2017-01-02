@@ -24,8 +24,9 @@ public class GOAPPlanner {
         // check what actions can run using their checkProceduralPrecondition
         HashSet<GOAPAction> usableActions = new HashSet<GOAPAction>();
         foreach (GOAPAction a in availableActions) {
-            if (a.checkProceduralPrecondition(agent))
+            if (a.checkProceduralPrecondition(agent)) {
                 usableActions.Add(a);
+            }
         }
 
         // we now have all actions that can run, stored in usableActions
