@@ -17,7 +17,6 @@ public class DroneActionHarvestResources : GOAPAction, IActionPerformed {
     }
 
     public override bool isDone() {
-//		Debug.Log ("isDone() " + completed);
         return completed;
     }
 
