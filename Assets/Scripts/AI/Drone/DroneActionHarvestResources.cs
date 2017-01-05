@@ -34,12 +34,15 @@ public class DroneActionHarvestResources : GOAPAction, IActionPerformed {
         if (drone == null) {
             throw new MissingComponentException("agent doesn't have drone component!");
         }
-        return drone.getResourceTargetLocation();
+        return drone.getTargetResource();
     }
 
 	public override bool perform(GameObject agent) {
         DroneAgent drone = agent.GetComponent<DroneAgent>();
 		bool success = drone.harvest(target, this);
+        if (!success) {
+            drone.clearTargetResource();
+        }
 //		Debug.Log ("perform() " + success);
         return success;
     }

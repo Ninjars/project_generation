@@ -27,7 +27,7 @@ public class DroneActionDeliverResources : GOAPAction {
 
     public override bool checkProceduralPrecondition(GameObject agent) {
         DroneAgent drone = agent.GetComponent<DroneAgent>();
-        target = drone.homeLocation;
+        target = drone.homeBase;
         return target != null;
     }
 

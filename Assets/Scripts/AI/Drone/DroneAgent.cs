@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class DroneAgent : MobileAgent, Interfaces.IHarvester {
 
-    public GameObject homeLocation;
+    public GameObject homeBase;
+    public GameObject targetResource;
     public int resourceCapacity = 10;
     public int currentResourceCount;
 	public float harvestTime = 1f;
@@ -24,16 +25,30 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
         health = 1;
     }
 
-    void OnDrawGizmos() {
-        GameObject target = GetComponent<DroneActionHarvestResources>().target;
-        if (target != null) {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(gameObject.transform.position, target.transform.position);
+    void Update() {
+        if (!decommissioned && homeBase != null && targetResource == null) {
+            // if we're not decommissioned but we have a homeBase and no target, we should look for a target
+            Interfaces.IResourceStockpile stockpile = homeBase.GetComponent<Interfaces.IResourceStockpile>();
+            if (stockpile == null) {
+                throw new ArgumentException("DroneAgent sanity check: home base is a non-stockpile object; this is unsupported");
+            }
+            // check that we shouldn't actually be decommissioned
+            decommissioned = stockpile.decomissionHarvesterIfNeeded(gameObject);
+            if (!decommissioned) {
+                // go harvesting!
+                targetResource = stockpile.getHarvesterTarget(gameObject);
+            }
         }
-        target = GetComponent<DroneActionDeliverResources>().target;
-        if (target != null) {
+    }
+
+    void OnDrawGizmos() {
+        if (targetResource != null) {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(gameObject.transform.position, targetResource.transform.position);
+        }
+        if (homeBase != null) {
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(gameObject.transform.position, target.transform.position);
+            Gizmos.DrawLine(gameObject.transform.position, homeBase.transform.position);
         }
     }
 
@@ -49,12 +64,28 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
         // todo: handle death
     }
 
-    public void setHomeLocation(GameObject location) {
-        Interfaces.IResourceStockpile stockpile = location.GetComponent<Interfaces.IResourceStockpile>();
+    public void setHomeBase(GameObject targetObject) {
+        Interfaces.IResourceStockpile stockpile = targetObject.GetComponent<Interfaces.IResourceStockpile>();
         if (stockpile == null) {
             throw new ArgumentException("DroneAgent sanity check: setting location as a non-stockpile object; this is unsupported");
         }
-        homeLocation = location;
+        homeBase = targetObject;
+    }
+
+    public void clearTargetResource() {
+        targetResource = null;
+    }
+
+    private void setTargetResource(GameObject targetObject) {
+        if (targetObject == null) {
+            targetResource = null;
+            return;
+        }
+        Resource resource = targetObject.GetComponent<Resource>();
+        if (resource == null) {
+            throw new ArgumentException("DroneAgent.setResourceTarget() passed object that isn't a resource " + targetObject);
+        }
+        targetResource = targetObject;
     }
 
     public void decommission() {
@@ -67,7 +98,6 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
 
     internal bool harvest(GameObject target, IActionPerformed callback) {
         if (target == null) {
-            Debug.Log ("harvest() : null target");
             return false;
         }
 		if (isFullOfResources ()) {
@@ -96,7 +126,7 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
         }
         Resource resource = target.GetComponent<Resource>();
         if (resource == null) {
-            Debug.Log("performHarvest: DroneAgent harvest target doesn't have a Resource script component! This case is unhandled!");
+            throw new ArgumentException("performHarvest: DroneAgent harvest target doesn't have a Resource script component! This case is unhandled!");
         } else {
             int harvestedAmount = resource.harvest(1);
             if (harvestedAmount == 0) {
@@ -134,12 +164,8 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
         return worldData;
     }
 
-    public GameObject getResourceTargetLocation() {
-        Interfaces.IResourceStockpile stockpile = homeLocation == null ? null : homeLocation.GetComponent<Interfaces.IResourceStockpile>();
-        if (stockpile == null) {
-            throw new ArgumentException("DroneAgent sanity check: depositResources targetting a non-stockpile object; this is unsupported");
-        }
-        return stockpile.getHarvesterTarget(gameObject);
+    public GameObject getTargetResource() {
+        return targetResource;
     }
 
     public int getResourcesNeeded() {
