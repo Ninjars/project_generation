@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class WallGenSimple : MonoBehaviour, Interfaces.IWallGenerator {
+public class WallGenSimple : MonoBehaviour, IWallGenerator {
     public float wallHeight = 5;
 
     public Mesh generate(List<List<int>> outlines, List<Vector3> vertices) {

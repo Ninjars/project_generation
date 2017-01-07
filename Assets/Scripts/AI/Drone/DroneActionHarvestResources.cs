@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class DroneActionHarvestResources : GOAPAction, IActionPerformed {
 
@@ -25,16 +23,16 @@ public class DroneActionHarvestResources : GOAPAction, IActionPerformed {
     }
 
     public override bool checkProceduralPrecondition(GameObject agent) {
-        target = updateTarget(agent, target);
-        return target != null;
-    }
-
-    private GameObject updateTarget(GameObject agent, GameObject currentTarget) {
         DroneAgent drone = agent.GetComponent<DroneAgent>();
         if (drone == null) {
             throw new MissingComponentException("agent doesn't have drone component!");
         }
-        return drone.getTargetResource();
+        target = updateTarget(drone, target);
+        return target != null;
+    }
+
+    private GameObject updateTarget(IHarvester drone, GameObject currentTarget) {
+        return drone.getTargetResource() == null ? null : drone.getTargetResource().getGameObject();
     }
 
 	public override bool perform(GameObject agent) {

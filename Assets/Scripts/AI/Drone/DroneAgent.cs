@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DroneAgent : MobileAgent, Interfaces.IHarvester {
+public class DroneAgent : MobileAgent, IHarvester {
 
-    public GameObject homeBase;
-    public GameObject targetResource;
+    public IStockpile homeBase;
+    public IResource targetResource;
     public int resourceCapacity = 10;
     public int currentResourceCount;
 	public float harvestTime = 1f;
@@ -28,28 +28,24 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
     void Update() {
         if (!decommissioned && homeBase != null && targetResource == null) {
             // if we're not decommissioned but we have a homeBase and no target, we should look for a target
-            Interfaces.IResourceStockpile stockpile = homeBase.GetComponent<Interfaces.IResourceStockpile>();
-            if (stockpile == null) {
-                throw new ArgumentException("DroneAgent sanity check: home base is a non-stockpile object; this is unsupported");
-            }
             // check that we shouldn't actually be decommissioned
-            decommissioned = stockpile.decomissionHarvesterIfNeeded(gameObject);
+            decommissioned = homeBase.decomissionHarvesterIfNeeded(this);
             if (!decommissioned) {
                 // go harvesting!
-                targetResource = stockpile.getHarvesterTarget(gameObject);
+                targetResource = homeBase.getHarvesterTarget(this);
             }
         }
     }
 
     void OnDrawGizmos() {
-        if (targetResource != null) {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(gameObject.transform.position, targetResource.transform.position);
-        }
-        if (homeBase != null) {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(gameObject.transform.position, homeBase.transform.position);
-        }
+        //if (targetResource != null) {
+        //    Gizmos.color = Color.green;
+        //    Gizmos.DrawLine(gameObject.transform.position, targetResource.getPosition());
+        //}
+        //if (homeBase != null) {
+        //    Gizmos.color = Color.red;
+        //    Gizmos.DrawLine(gameObject.transform.position, homeBase.getPosition());
+        //}
     }
 
 	public override Dictionary<string, object> createGoalState() {
@@ -64,28 +60,20 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
         // todo: handle death
     }
 
-    public void setHomeBase(GameObject targetObject) {
-        Interfaces.IResourceStockpile stockpile = targetObject.GetComponent<Interfaces.IResourceStockpile>();
-        if (stockpile == null) {
-            throw new ArgumentException("DroneAgent sanity check: setting location as a non-stockpile object; this is unsupported");
-        }
-        homeBase = targetObject;
+    public void setHomeBase(IStockpile stockpile) {
+        homeBase = stockpile;
     }
 
     public void clearTargetResource() {
         targetResource = null;
     }
 
-    private void setTargetResource(GameObject targetObject) {
-        if (targetObject == null) {
+    private void setTargetResource(IResource resource) {
+        if (resource == null) {
             targetResource = null;
             return;
         }
-        Resource resource = targetObject.GetComponent<Resource>();
-        if (resource == null) {
-            throw new ArgumentException("DroneAgent.setResourceTarget() passed object that isn't a resource " + targetObject);
-        }
-        targetResource = targetObject;
+        targetResource = resource;
     }
 
     public void decommission() {
@@ -138,12 +126,8 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
 		harvestState = HarvestState.NONE;
 	}
 
-    internal bool depositResources(GameObject target) {
-        Interfaces.IResourceStockpile stockpile = target.GetComponent<Interfaces.IResourceStockpile>();
-        if (stockpile == null) {
-            throw new ArgumentException("DroneAgent sanity check: depositResources targetting a non-stockpile object; this is unsupported");
-        }
-        currentResourceCount = stockpile.deposit(gameObject, currentResourceCount);
+    internal bool depositResources(IStockpile stockpile) {
+        currentResourceCount = stockpile.deposit(this, currentResourceCount);
         return currentResourceCount == 0;
     }
 
@@ -164,7 +148,7 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
         return worldData;
     }
 
-    public GameObject getTargetResource() {
+    public IResource getTargetResource() {
         return targetResource;
     }
 
@@ -174,5 +158,17 @@ public class DroneAgent : MobileAgent, Interfaces.IHarvester {
 
     public bool isDecommissioned() {
         return decommissioned;
+    }
+
+    public void destroy() {
+        Destroy(gameObject);
+    }
+
+    public Vector3 getPosition() {
+        return gameObject.transform.position;
+    }
+
+    public GameObject getGameObject() {
+        return gameObject;
     }
 }

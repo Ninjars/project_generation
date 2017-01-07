@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class DroneActionDecomission : GOAPAction {
 
@@ -26,13 +24,16 @@ public class DroneActionDecomission : GOAPAction {
 
     public override bool checkProceduralPrecondition(GameObject agent) {
         DroneAgent drone = agent.GetComponent<DroneAgent>();
-        target = drone.homeBase;
+        target = drone.homeBase == null ? null : drone.homeBase.getGameObject();
         return target != null  && drone.isDecommissioned();
     }
 
     public override bool perform(GameObject agent) {
-        Interfaces.IResourceStockpile stockpile = target.GetComponent<Interfaces.IResourceStockpile>();
-        stockpile.removeHarvester(agent);
+        IStockpile stockpile = target.GetComponent<IStockpile>();
+        IHarvester drone = agent.GetComponent<IHarvester>();
+        if (drone != null) {
+            stockpile.removeHarvester(drone);
+        }
         completed = true;
         Destroy(gameObject);
         return true;

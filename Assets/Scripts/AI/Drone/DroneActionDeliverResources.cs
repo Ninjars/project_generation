@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class DroneActionDeliverResources : GOAPAction {
 
@@ -27,13 +25,14 @@ public class DroneActionDeliverResources : GOAPAction {
 
     public override bool checkProceduralPrecondition(GameObject agent) {
         DroneAgent drone = agent.GetComponent<DroneAgent>();
-        target = drone.homeBase;
+        target = drone.homeBase.getGameObject();
         return target != null;
     }
 
     public override bool perform(GameObject agent) {
         DroneAgent drone = agent.GetComponent<DroneAgent>();
         completed = true;
-        return drone.depositResources(target);
+        IStockpile stockpile = target.GetComponent<IStockpile>();
+        return drone.depositResources(stockpile);
     }
 }

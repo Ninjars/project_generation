@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WallGenExtrusion : MonoBehaviour, Interfaces.IWallGenerator {
+public class WallGenExtrusion : MonoBehaviour, IWallGenerator {
     private static System.Random random = new System.Random();
 
     public float wallHeight = 5;

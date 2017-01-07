@@ -47,7 +47,7 @@ public class MeshGenerator : MonoBehaviour {
     void createWallMesh() {
         List<List<int>> outlines = calculateMeshOutlines();
 
-        Interfaces.IWallGenerator wallGenerator = walls.GetComponent<Interfaces.IWallGenerator>();
+        IWallGenerator wallGenerator = walls.GetComponent<IWallGenerator>();
         if (wallGenerator == null) {
             Debug.LogError("No WallGenerator attached");
             return;

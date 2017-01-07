@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile, Interfaces.IListChangeListener {
+public class Refinery : MonoBehaviour, IStockpile, IListChangeListener<IResource> {
 
     public int maxRawResources = 100;
     public int currentRawResources = 0;
@@ -19,40 +19,40 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile, Interfaces
     private double squaredDetectionRadius;
     public float targetHarvesterToResourcePointRatio = 0.5f;
 
-    public List<GameObject> managedHarvesters = new List<GameObject>();
-    private List<GameObject> resourcesInRange;
+    public List<IHarvester> managedHarvesters = new List<IHarvester>();
+    private List<IResource> resourcesInRange;
 
 	void Start () {
         squaredDetectionRadius = resourceDetectionRadius * resourceDetectionRadius;
         resourcesInRange = getResourcesInRange();
-        GlobalRegister.registerResourceChangeListener((Interfaces.IListChangeListener)this);
+        GlobalRegister.registerResourceChangeListener((IListChangeListener<IResource>)this);
     }
 
-    public void onObjectAdded(GameObject resource) {
-        if (isObjectInRange(resource)) {
+    public void onListItemAdded(IResource resource) {
+        if (isInRange(resource.getPosition())) {
             resourcesInRange.Add(resource);
         }
     }
 
-    public void onObjectRemoved(GameObject resource) {
+    public void onListItemRemoved(IResource resource) {
         resourcesInRange.Remove(resource);
     }
 
     /**
      * Called on start to populate inital resources list, which is then maintained by listening for changes
      */
-    private List<GameObject> getResourcesInRange() {
-        List<GameObject> resourcesList = GlobalRegister.getResources();
-        foreach (GameObject resource in resourcesList) {
-            if (!isObjectInRange(resource)) {
+    private List<IResource> getResourcesInRange() {
+        List<IResource> resourcesList = GlobalRegister.getResources();
+        foreach (IResource resource in resourcesList) {
+            if (!isInRange(resource.getPosition())) {
                 resourcesList.Remove(resource);
             }
         }
         return resourcesList;
     }
 
-    private bool isObjectInRange(GameObject gameObject) {
-        double distance = (transform.position - gameObject.gameObject.transform.position).sqrMagnitude;
+    private bool isInRange(Vector3 position) {
+        double distance = (transform.position - position).sqrMagnitude;
         if (distance > squaredDetectionRadius) {
             return false;
         } else {
@@ -82,13 +82,13 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile, Interfaces
 
     private void createNewHarvester() {
         GameObject harvesterInstance = Instantiate(harvesterObj, gameObject.transform.position, Quaternion.identity);
-        Interfaces.IHarvester harvester = harvesterInstance.GetComponent<Interfaces.IHarvester>();
+        IHarvester harvester = harvesterInstance.GetComponent<IHarvester>();
         if (harvester == null) {
             Debug.Log("Refinery harvester object doesn't implement IHarvester interface " + harvesterInstance);
             Destroy(harvesterInstance);
         } else {
-            harvester.setHomeBase(gameObject);
-            managedHarvesters.Add(harvesterInstance);
+            harvester.setHomeBase(this);
+            managedHarvesters.Add(harvester);
         }
     }
 
@@ -96,11 +96,11 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile, Interfaces
      * Attempt to deposit resources.  Will return the number of resources that weren't depositied.
      * If the depositor is a harvester managed by the refinery, it may want to destroy the harvester.
      */
-    public int deposit(GameObject depositor, int count) {
+    public int deposit(IHarvester harvester, int count) {
         int remainingSpace = maxRawResources - currentRawResources;
         if (remainingSpace >= count) {
             currentRawResources += count;
-            decomissionHarvesterIfNeeded(depositor);
+            decomissionHarvesterIfNeeded(harvester);
             return 0;
         } else {
             count -= remainingSpace;
@@ -109,30 +109,26 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile, Interfaces
         }
     }
 
-    public void removeHarvester(GameObject harvester) {
+    public void removeHarvester(IHarvester harvester) {
         managedHarvesters.Remove(harvester);
     }
 
-    public GameObject getHarvesterTarget(GameObject harvesterObj) {
+    public IResource getHarvesterTarget(IHarvester harvester) {
         // sanity check that this harvester is correctly registered here
-        if (!managedHarvesters.Contains(harvesterObj)) {
+        if (!managedHarvesters.Contains(harvester)) {
             throw new KeyNotFoundException("getHarvesterTarget() called with unregistered harvester");
         }
-        Interfaces.IHarvester harvester = harvesterObj.GetComponent<Interfaces.IHarvester>();
-        if (harvester == null) {
-            return null;
-        }
-        List<GameObject> allTargets = new List<GameObject>(resourcesInRange);
-        GameObject best = harvester.getTargetResource();
+        List<IResource> resourceTargets = new List<IResource>(resourcesInRange);
+        IResource best = harvester.getTargetResource();
         double bestScore = 0;
         if (best != null) {
             // weight towards current target
-            bestScore = getTargetScore(harvesterObj, harvester, best) * 1.2;
-            allTargets.Remove(best);
+            bestScore = getTargetScore(harvester, best) * 1.2;
+            resourceTargets.Remove(best);
         }
 
-        foreach (GameObject target in allTargets) {
-            double score = getTargetScore(harvesterObj, harvester, target);
+        foreach (IResource target in resourceTargets) {
+            double score = getTargetScore(harvester, target);
             if (score > bestScore) {
                 best = target;
                 bestScore = score;
@@ -146,34 +142,19 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile, Interfaces
      * sustainability of harvesting from it. 
      * returns -1 for cannot harvest, 0 for worst, 1 for best
      */
-    private double getTargetScore(GameObject queryingHarvesterObject, GameObject target) {
-        Interfaces.IHarvester queryingHarvester = queryingHarvesterObject.GetComponent<Interfaces.IHarvester>();
-        if (queryingHarvester == null) {
-            // require a harvester to get score
-            Debug.Log("Non-harvester object considered for Refinery.getTargetScore()! " + queryingHarvesterObject);
-            return -1;
-        } else {
-            return getTargetScore(queryingHarvesterObject, queryingHarvester, target);
-        }
-    }
-
-    private double getTargetScore(GameObject queryingHarvesterObject, Interfaces.IHarvester queryingHarvester, GameObject target) {
-        Resource resource = target.GetComponent<Resource>();
-        if (resource == null) {
-            // don't select targets that can't be harvested
-            Debug.Log("Non-resource object considered for Refinery.getTargetScore() target! " + target);
+    private double getTargetScore(IHarvester queryingHarvester, IResource resource) {
+        if (queryingHarvester == null || resource == null) {
             return -1;
         }
-
-        double distanceFactor = 1 / Vector3.Distance(target.transform.position, queryingHarvesterObject.transform.position);
+        double distanceFactor = 1 / Vector3.Distance(resource.getPosition(), queryingHarvester.getPosition());
 
         // prefer abundant resources over sufficient resources, and strongly prefer sufficient over insufficient 
         // - 20%
         double quantityFactor;
         int resourcesNeeded = queryingHarvester.getResourcesNeeded();
-        if (resource.currentValue >= resourcesNeeded * 2) {
+        if (resource.getCurrentValue() >= resourcesNeeded * 2) {
             quantityFactor = 1;
-        } else if (resource.currentValue >= resourcesNeeded) {
+        } else if (resource.getCurrentValue() >= resourcesNeeded) {
             quantityFactor = 0.85;
         } else {
             quantityFactor = 0.2;
@@ -181,20 +162,19 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile, Interfaces
 
         // prefer sustainably harvestable resource 
         double sustainabilityFactor;
-        if (resource.destroyIfDepleted && resource.doesRegen()) {
+        if (resource.willDestroyIfDepleted() && resource.doesRegenerate()) {
             // allow margin for restoration when abstaining from depletable resources
-            sustainabilityFactor = resource.currentValue >= resourcesNeeded * 1.35 ? 1 : 0;
+            sustainabilityFactor = resource.getCurrentValue() >= resourcesNeeded * 1.35 ? 1 : 0;
         } else {
             sustainabilityFactor = 1;
         }
 
         double congestionFactor = 1;
         // strongly prefer uncontested targets
-        foreach (GameObject managedHarvesterObject in managedHarvesters) {
-            Interfaces.IHarvester managedHarvester = managedHarvesterObject.GetComponent<Interfaces.IHarvester>();
-            if (managedHarvester != null && !managedHarvesterObject.Equals(queryingHarvesterObject)) {
-                GameObject otherTarget = managedHarvester.getTargetResource();
-                if (otherTarget != null && otherTarget.Equals(target)) {
+        foreach (IHarvester managedHarvester in managedHarvesters) {
+            if (managedHarvester != null && !managedHarvester.Equals(queryingHarvester)) {
+                IResource otherResource = managedHarvester.getTargetResource();
+                if (otherResource != null && otherResource.Equals(resource)) {
                     congestionFactor *= 0.5;
                 }
             }
@@ -204,13 +184,12 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile, Interfaces
         return (1 * sustainabilityFactor) + (0.3 * distanceFactor) + (0.2 * quantityFactor) + (0.5 * congestionFactor);
     }
 
-    public bool decomissionHarvesterIfNeeded(GameObject harvesterObject) {
-        if (!managedHarvesters.Contains(harvesterObject)) {
+    public bool decomissionHarvesterIfNeeded(IHarvester harvester) {
+        if (!managedHarvesters.Contains(harvester)) {
             // don't decomission depositors that the refinery doesn't own
             return false;
         }
         if (doesHarvesterCountExceedTargetRatio()) {
-            Interfaces.IHarvester harvester = harvesterObject.GetComponent<Interfaces.IHarvester>();
             if (harvester == null) {
                 throw new UnityException("Sanity check: Refinery.decomissionHarvesterIfNeeded() called on a non-harvester object, which is unexpected.");
             } else {
@@ -234,5 +213,13 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile, Interfaces
 
     private int getResourceInRangeCount() {
         return resourcesInRange.Count;
+    }
+
+    public Vector3 getPosition() {
+        return gameObject.transform.position;
+    }
+
+    public GameObject getGameObject() {
+        return gameObject;
     }
 }

@@ -25,7 +25,7 @@ public class PopulateMap : MonoBehaviour {
 
 
         GlobalRegister.clearResources();
-        List<GameObject> resourceTiles = populateResources(random, landTiles);
+        List<IResource> resourceTiles = populateResources(random, landTiles);
         GlobalRegister.addResources(resourceTiles);
 	}
 
@@ -33,14 +33,14 @@ public class PopulateMap : MonoBehaviour {
      * Selects random tiles to place resources on them, manipulating unpopulatedTiles 
      * to remove these resource tiles from it.
      */
-    private List<GameObject> populateResources(System.Random random, List<Coord> unpopulatedTiles) {
-        List<GameObject> resources = new List<GameObject>();
+    private List<IResource> populateResources(System.Random random, List<Coord> unpopulatedTiles) {
+        List<IResource> resources = new List<IResource>();
         for (int i = 0; i < resourceCount; i++) {
             int tileIndex = random.Next(0, unpopulatedTiles.Count);
             Coord resTile = unpopulatedTiles[tileIndex];
             unpopulatedTiles.Remove(resTile);
             GameObject resource = Instantiate(resourceObj, new Vector3(resTile.tileX, 0, resTile.tileY), Quaternion.identity);
-            resources.Add(resource);
+            resources.Add(resource.GetComponent<IResource>());
         }
         return resources;
     }

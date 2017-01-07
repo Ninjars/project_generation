@@ -1,60 +1,55 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class GlobalRegister {
 
-    private static List<GameObject> resources = new List<GameObject>();
-    private static List<Interfaces.IListChangeListener> resourceChangeListeners = new List<Interfaces.IListChangeListener>();
+    private static List<IResource> resources = new List<IResource>();
+    private static List<IListChangeListener<IResource>> resourceChangeListeners = new List<IListChangeListener<IResource>>();
 
-    public static List<GameObject> getResources() {
-        return new List<GameObject>(resources);
+    public static List<IResource> getResources() {
+        return new List<IResource>(resources);
     }
 
-    public static void addResource(GameObject gameObject) {
-        Resource resource = gameObject.GetComponent<Resource>();
-        if (resource == null) {
-            throw new MissingComponentException("GlobalRegister.addResource() passed an object without a Resource component");
-        }
-        resources.Add(gameObject);
+    public static void addResource(IResource resource) {
+        resources.Add(resource);
     }
 
-    public static void addResources(List<GameObject> gameObjects) {
-        foreach (GameObject gameObject in gameObjects) {
+    public static void addResources(List<IResource> gameObjects) {
+        foreach (IResource gameObject in gameObjects) {
             addResource(gameObject);
             notifyResourceListeners(gameObject, true);
         }
     }
 
-    public static void removeResource(GameObject gameObject) {
+    public static void removeResource(IResource gameObject) {
         notifyResourceListeners(gameObject, false);
         resources.Remove(gameObject);
     }
 
     public static void clearResources() {
         if (resources != null) {
-            foreach (GameObject obj in resources) {
+            foreach (IResource obj in resources) {
                 notifyResourceListeners(obj, false);
-                Object.Destroy(obj);
+                obj.destroy();
             }
             resources.Clear();
         }
     }
 
-    public static void registerResourceChangeListener(Interfaces.IListChangeListener listener) {
+    public static void registerResourceChangeListener(IListChangeListener<IResource> listener) {
         resourceChangeListeners.Add(listener);
     }
 
-    public static void unregisterResourceChangeListener(Interfaces.IListChangeListener listener) {
+    public static void unregisterResourceChangeListener(IListChangeListener<IResource> listener) {
         resourceChangeListeners.Remove(listener);
     }
 
-    private static void notifyResourceListeners(GameObject changingObject, bool isAdded) {
-        foreach (Interfaces.IListChangeListener listener in resourceChangeListeners) {
+    private static void notifyResourceListeners(IResource changingObject, bool isAdded) {
+        foreach (IListChangeListener<IResource> listener in resourceChangeListeners) {
             if (isAdded) {
-                listener.onObjectAdded(changingObject);
+                listener.onListItemAdded(changingObject);
             } else {
-                listener.onObjectRemoved(changingObject);
+                listener.onListItemRemoved(changingObject);
             }
         }
     }
