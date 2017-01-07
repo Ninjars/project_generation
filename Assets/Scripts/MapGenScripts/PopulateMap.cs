@@ -23,13 +23,10 @@ public class PopulateMap : MonoBehaviour {
         int mapHeight = map.GetLength(1);
         List<Coord> landTiles = filterTileCoords(map, -mapWidth/2, -mapHeight/2, 0);
 
-        if (GlobalRegister.resources != null) {
-            foreach (GameObject obj in GlobalRegister.resources) {
-                Destroy(obj);
-            }
-        }
+
+        GlobalRegister.clearResources();
         List<GameObject> resourceTiles = populateResources(random, landTiles);
-        GlobalRegister.resources = resourceTiles;
+        GlobalRegister.addResources(resourceTiles);
 	}
 
     /*

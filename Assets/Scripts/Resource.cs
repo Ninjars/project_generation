@@ -20,7 +20,7 @@ public class Resource : MonoBehaviour {
 	// Update is called once per frame
     void Update () {
         if (destroyIfDepleted && currentValue == 0) {
-            GlobalRegister.resources.Remove(gameObject);
+            GlobalRegister.removeResource(gameObject);
             Destroy(gameObject);
             return;
         }

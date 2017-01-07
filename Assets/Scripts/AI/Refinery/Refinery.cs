@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile {
+public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile, Interfaces.IListChangeListener {
 
     public int maxRawResources = 100;
     public int currentRawResources = 0;
@@ -20,10 +20,45 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile {
     public float targetHarvesterToResourcePointRatio = 0.5f;
 
     public List<GameObject> managedHarvesters = new List<GameObject>();
+    private List<GameObject> resourcesInRange;
 
 	void Start () {
         squaredDetectionRadius = resourceDetectionRadius * resourceDetectionRadius;
-	}
+        resourcesInRange = getResourcesInRange();
+        GlobalRegister.registerResourceChangeListener((Interfaces.IListChangeListener)this);
+    }
+
+    public void onObjectAdded(GameObject resource) {
+        if (isObjectInRange(resource)) {
+            resourcesInRange.Add(resource);
+        }
+    }
+
+    public void onObjectRemoved(GameObject resource) {
+        resourcesInRange.Remove(resource);
+    }
+
+    /**
+     * Called on start to populate inital resources list, which is then maintained by listening for changes
+     */
+    private List<GameObject> getResourcesInRange() {
+        List<GameObject> resourcesList = GlobalRegister.getResources();
+        foreach (GameObject resource in resourcesList) {
+            if (!isObjectInRange(resource)) {
+                resourcesList.Remove(resource);
+            }
+        }
+        return resourcesList;
+    }
+
+    private bool isObjectInRange(GameObject gameObject) {
+        double distance = (transform.position - gameObject.gameObject.transform.position).sqrMagnitude;
+        if (distance > squaredDetectionRadius) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 	
 	void Update () {
         // check if new harvester should be created
@@ -87,7 +122,7 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile {
         if (harvester == null) {
             return null;
         }
-        List<GameObject> allTargets = getResourcesInRange();
+        List<GameObject> allTargets = new List<GameObject>(resourcesInRange);
         GameObject best = harvester.getTargetResource();
         double bestScore = 0;
         if (best != null) {
@@ -198,24 +233,6 @@ public class Refinery : MonoBehaviour, Interfaces.IResourceStockpile {
     }
 
     private int getResourceInRangeCount() {
-        int count = 0;
-        foreach (GameObject resource in GlobalRegister.resources) {
-            double distance = (transform.position - resource.gameObject.transform.position).sqrMagnitude;
-            if (distance <= squaredDetectionRadius) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    private List<GameObject> getResourcesInRange() {
-        List<GameObject> inRange = new List<GameObject>();
-        foreach (GameObject resource in GlobalRegister.resources) {
-            double distance = (transform.position - resource.gameObject.transform.position).sqrMagnitude;
-            if (distance <= squaredDetectionRadius) {
-                inRange.Add(resource);
-            }
-        }
-        return inRange;
+        return resourcesInRange.Count;
     }
 }

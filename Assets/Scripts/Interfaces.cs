@@ -9,6 +9,11 @@ public class Interfaces : MonoBehaviour {
         Mesh generate(List<List<int>> outlines, List<Vector3> vertices);
     }
 
+    public interface IListChangeListener {
+        void onObjectAdded(GameObject newObject);
+        void onObjectRemoved(GameObject newObject);
+    }
+
     public interface IHarvester {
         void setHomeBase(GameObject resourceDeposit);
         void decommission();

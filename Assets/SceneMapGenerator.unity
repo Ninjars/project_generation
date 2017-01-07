@@ -313,7 +313,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resourceObj: {fileID: 1154356049711980, guid: 59eb95b12ad0945f682b9a34c45620e3,
     type: 2}
-  resourceCount: 1
+  resourceCount: 500
 --- !u!114 &347016427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -714,6 +714,7 @@ MonoBehaviour:
     type: 2}
   resourceDetectionRadius: 100
   targetHarvesterToResourcePointRatio: 1
+  managedHarvesters: []
 --- !u!4 &1062984900
 Transform:
   m_ObjectHideFlags: 0
