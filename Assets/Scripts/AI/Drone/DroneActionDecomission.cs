@@ -33,9 +33,9 @@ public class DroneActionDecomission : GOAPAction {
         IHarvester drone = agent.GetComponent<IHarvester>();
         if (drone != null) {
             stockpile.removeHarvester(drone);
+            drone.destroy();
         }
         completed = true;
-        Destroy(gameObject);
         return true;
     }
 }

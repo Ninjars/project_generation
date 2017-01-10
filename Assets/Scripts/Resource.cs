@@ -84,6 +84,6 @@ public class Resource : MonoBehaviour, IResource {
     }
 
     public void destroy() {
-        Destroy(gameObject);
+        Destroy(transform.root.gameObject);
     }
 }

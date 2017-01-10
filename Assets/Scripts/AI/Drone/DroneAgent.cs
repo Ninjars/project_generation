@@ -161,7 +161,7 @@ public class DroneAgent : MobileAgent, IHarvester {
     }
 
     public void destroy() {
-        Destroy(gameObject);
+        Destroy(transform.root.gameObject);
     }
 
     public Vector3 getPosition() {
