@@ -13,7 +13,6 @@ public abstract class MobileAgent : BaseAgent {
     public void setSpeed(float val) {
         terminalSpeed = val / 10f;
         acceleration = (val / 10f) / 2f;
-        Debug.Log("set speed " + val + " " + terminalSpeed + " " + acceleration);
     }
 
     public override bool moveAgent(GOAPAction nextAction) {
