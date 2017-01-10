@@ -42,10 +42,11 @@ public class Refinery : MonoBehaviour, IStockpile, IListChangeListener<IResource
      * Called on start to populate inital resources list, which is then maintained by listening for changes
      */
     private List<IResource> getResourcesInRange() {
-        List<IResource> resourcesList = GlobalRegister.getResources();
-        foreach (IResource resource in resourcesList) {
-            if (!isInRange(resource.getPosition())) {
-                resourcesList.Remove(resource);
+        List<IResource> allResourcesList = GlobalRegister.getResources();
+        List<IResource> resourcesList = new List<IResource>();
+        foreach (IResource resource in allResourcesList) {
+            if (isInRange(resource.getPosition())) {
+                resourcesList.Add(resource);
             }
         }
         return resourcesList;
