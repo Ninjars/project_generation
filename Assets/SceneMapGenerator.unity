@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657987, g: 0.49641222, b: 0.57481617, a: 1}
+  m_IndirectSpecularColor: {r: 0.44658053, g: 0.49641287, b: 0.57481724, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -313,7 +313,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resourceObj: {fileID: 1154356049711980, guid: 59eb95b12ad0945f682b9a34c45620e3,
     type: 2}
-  resourceCount: 500
+  resourceCount: 50
 --- !u!114 &347016427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -712,9 +712,8 @@ MonoBehaviour:
   secondsPerRefine: 5
   harvesterObj: {fileID: 1611962163659788, guid: 6fdd8e9d1a6af48adb554c226de477c5,
     type: 2}
-  resourceDetectionRadius: 100
+  resourceDetectionRadius: 20
   targetHarvesterToResourcePointRatio: 1
-  managedHarvesters: []
 --- !u!4 &1062984900
 Transform:
   m_ObjectHideFlags: 0
