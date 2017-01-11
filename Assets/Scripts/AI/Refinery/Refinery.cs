@@ -45,7 +45,7 @@ public class Refinery : MonoBehaviour, IStockpile, IListChangeListener<IResource
         List<IResource> allResourcesList = GlobalRegister.getResources();
         List<IResource> resourcesList = new List<IResource>();
         foreach (IResource resource in allResourcesList) {
-            if (isInRange(resource.getPosition())) {
+            if (resource != null && isInRange(resource.getPosition())) {
                 resourcesList.Add(resource);
             }
         }
