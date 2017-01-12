@@ -28,14 +28,8 @@ public class Resource : MonoBehaviour, IResource {
         }
         timeSinceLastRegen += Time.deltaTime;
         if (timeSinceLastRegen >= secondsPerRegen) {
-            while (timeSinceLastRegen >= secondsPerRegen) {
-                bool ableToRegen = performRegen();
-                timeSinceLastRegen -= secondsPerRegen;
-                if (!ableToRegen) {
-                    // can fail to regen when at max capacity;
-                    break;
-                }
-            }
+            timeSinceLastRegen -= secondsPerRegen;
+            performRegen();
         }
     }
 
