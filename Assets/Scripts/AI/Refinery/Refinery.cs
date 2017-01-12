@@ -25,6 +25,7 @@ public class Refinery : MonoBehaviour, IStockpile, IListChangeListener<IResource
 	void Start () {
         squaredDetectionRadius = resourceDetectionRadius * resourceDetectionRadius;
         resourcesInRange = getResourcesInRange();
+        Debug.Assert(resourcesInRange != null);
         GlobalRegister.registerResourceChangeListener((IListChangeListener<IResource>)this);
     }
 
