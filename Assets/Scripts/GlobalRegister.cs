@@ -12,6 +12,7 @@ public class GlobalRegister {
 
     public static void addResource(IResource resource) {
         resources.Add(resource);
+        notifyResourceListeners(resource, true);
     }
 
     public static void addResources(List<IResource> gameObjects) {
