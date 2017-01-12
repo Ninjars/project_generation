@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 
 public class DroneActionHarvestResources : GOAPAction, IActionPerformed {
-
+    public float range = 2f;
     private bool completed = false;
 
 	public DroneActionHarvestResources() {
 		addEffect(DroneAgent.PLAN_COLLECTED, true);
         cost = 100f;
+        setMaxTriggerRange(range);
     }
 
     public override void reset() {

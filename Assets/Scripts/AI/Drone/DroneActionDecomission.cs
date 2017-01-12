@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 
 public class DroneActionDecomission : GOAPAction {
-
+    public float range = 2f;
     private bool completed = false;
 
     public DroneActionDecomission() {
         addEffect(DroneAgent.PLAN_DECOMMISSION, true);
         cost = 50f;
+        setMaxTriggerRange(range);
     }
 
     public override void reset() {

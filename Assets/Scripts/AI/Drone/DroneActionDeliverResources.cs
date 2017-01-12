@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 
 public class DroneActionDeliverResources : GOAPAction {
-
+    public float range = 2f;
     private bool completed = false;
 
     public DroneActionDeliverResources() {
 		addPrecondition(DroneAgent.PLAN_COLLECTED, true);
 		addEffect(DroneAgent.PLAN_DELIVER, true);
         cost = 100f;
+        setMaxTriggerRange(range);
     }
 
     public override void reset() {
