@@ -101,16 +101,22 @@ public class MapGenSmoothCentreBias : MonoBehaviour {
     }
 
     void Start() {
-        generateMap();
+        int[,] map = generateMap();
+        registerMap(map);
     }
 
     void Update() {
         if (Input.GetMouseButtonDown(0)) {
-            generateMap();
+            int[,] map = generateMap();
+            registerMap(map);
         }
     }
 
-    void generateMap() {
+    private void registerMap(int[,] map) {
+        GlobalRegister.setWorldMap(map);
+    }
+
+    int[,] generateMap() {
         bool usingFixedSeed = !useRandomSeed && seed != null;
         System.Random random;
         if (usingFixedSeed) {
@@ -130,6 +136,7 @@ public class MapGenSmoothCentreBias : MonoBehaviour {
 
         PopulateMap mapPopulator = GetComponent<PopulateMap>();
         mapPopulator.populateMap(random, map);
+        return map;
     }
 
     int[,] randomFillMap(System.Random random) {

@@ -5,6 +5,7 @@ public class GlobalRegister {
 
     private static List<IResource> resources = new List<IResource>();
     private static List<IListChangeListener<IResource>> resourceChangeListeners = new List<IListChangeListener<IResource>>();
+    private static int[,] worldMap;
 
     public static List<IResource> getResources() {
         return new List<IResource>(resources);
@@ -53,5 +54,13 @@ public class GlobalRegister {
                 listener.onListItemRemoved(changingObject);
             }
         }
+    }
+
+    public static void setWorldMap(int[,] map) {
+        worldMap = map;
+    }
+
+    public static int[,] getWorldMap() {
+        return worldMap;
     }
 }
