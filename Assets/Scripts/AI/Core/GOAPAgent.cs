@@ -56,8 +56,7 @@ public sealed class GOAPAgent : MonoBehaviour {
 
     private void createIdleState() {
         idleState = (fsm, obj) => {
-
-			Dictionary<string, object> worldState = dataProvider.getWorldState();
+            Dictionary <string, object> worldState = dataProvider.getWorldState();
 			Dictionary<string, object> goal = dataProvider.createGoalState();
 
             Queue<GOAPAction> plan = planner.plan(gameObject, availableActions, worldState, goal);

@@ -25,9 +25,7 @@ public class DroneActionHarvestResources : GOAPAction, IActionPerformed {
 
     public override bool checkProceduralPrecondition(GameObject agent) {
         DroneAgent drone = agent.GetComponent<DroneAgent>();
-        if (drone == null) {
-            throw new MissingComponentException("agent doesn't have drone component!");
-        }
+        Debug.Assert(drone != null, "agent doesn't have drone component!");
         target = updateTarget(drone, target);
         return target != null;
     }
