@@ -128,8 +128,12 @@ public class Refinery : MonoBehaviour, IStockpile, IListChangeListener<IResource
             bestScore = getTargetScore(harvester, best) * 1.2;
             resourceTargets.Remove(best);
         }
-
+        
         foreach (IResource target in resourceTargets) {
+            if (target == null || target.Equals(null)) {
+                Debug.Log("Refinery ignoring null target resource");
+                continue;
+            }
             double score = getTargetScore(harvester, target);
             if (score > bestScore) {
                 best = target;

@@ -32,7 +32,7 @@ public class DroneActionHarvestResources : GOAPAction, IActionPerformed {
 
     private GameObject updateTarget(IHarvester drone, GameObject currentTarget) {
         IResource res = drone.getTargetResource();
-        return res == null ? null : res.getGameObject();
+        return res == null || res.Equals(null) ? null : res.getGameObject();
     }
 
 	public override bool perform(GameObject agent) {
