@@ -424,7 +424,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4113714410467742, guid: 5533c915947d446a5882fc1b562e7f2c, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4113714410467742, guid: 5533c915947d446a5882fc1b562e7f2c, type: 2}
       propertyPath: m_LocalPosition.z
@@ -448,6 +448,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4113714410467742, guid: 5533c915947d446a5882fc1b562e7f2c, type: 2}
       propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114312149445853084, guid: 5533c915947d446a5882fc1b562e7f2c,
+        type: 2}
+      propertyPath: targetHarvesterToResourcePointRatio
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -607,6 +612,16 @@ Prefab:
       propertyPath: m_RootOrder
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 114597949690616218, guid: 729f98e104690c946afa4378c935877b,
+        type: 2}
+      propertyPath: stockpileObj
+      value: 
+      objectReference: {fileID: 1141752802}
+    - target: {fileID: 114597949690616218, guid: 729f98e104690c946afa4378c935877b,
+        type: 2}
+      propertyPath: maxScouts
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 729f98e104690c946afa4378c935877b, type: 2}
   m_IsPrefabParent: 0
@@ -761,6 +776,11 @@ Transform:
   m_Father: {fileID: 347016424}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1141752802 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1774628478911062, guid: 5533c915947d446a5882fc1b562e7f2c,
+    type: 2}
+  m_PrefabInternal: {fileID: 615418042}
 --- !u!1 &1383401374
 GameObject:
   m_ObjectHideFlags: 0

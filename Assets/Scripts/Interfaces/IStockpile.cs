@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public interface IStockpile {
     int deposit(IHarvester depositor, int count); // returns amount unable to deposit
@@ -7,4 +8,5 @@ public interface IStockpile {
     void removeHarvester(IHarvester harvester);
     Vector3 getPosition();
     GameObject getGameObject();
+    void reportResources(List<IResource> resources);
 }

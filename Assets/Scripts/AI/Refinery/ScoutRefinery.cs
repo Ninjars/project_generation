@@ -14,19 +14,29 @@ public class ScoutRefinery : MonoBehaviour, IScoutBase {
     public int maxScouts = 3;
 
     public GameObject scoutObj;
+    public GameObject stockpileObj;
+    private IStockpile stockpile;
 
     private List<IScout> managedScouts = new List<IScout>();
-    public List<IResource> knownResources = new List<IResource>();
+    private List<IResource> knownResources = new List<IResource>();
     private Vector3 spawnLocation;
 
     private void Start() {
         spawnLocation = transform.FindChild("SpawnLocation").position;
+        stockpile = stockpileObj.GetComponent<IStockpile>();
+        if (stockpile == null) {
+            throw new Exception("no stockpile component attached to ScoutRefinery");
+        }
     }
 
     void Update() {
         // check if new harvester should be created
         if (canSendAdditionalScout()) {
             createNewScout();
+        }
+        if (stockpile != null && knownResources.Count >= minTransmitCount) {
+            stockpile.reportResources(knownResources);
+            knownResources.Clear();
         }
     }
 
@@ -55,6 +65,6 @@ public class ScoutRefinery : MonoBehaviour, IScoutBase {
     }
 
     public void onResourceLocationsFound(HashSet<IResource> hashSet) {
-
+        knownResources.AddRange(hashSet);
     }
 }

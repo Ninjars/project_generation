@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,23 +21,23 @@ public class Refinery : MonoBehaviour, IStockpile, IListChangeListener<IResource
     public float targetHarvesterToResourcePointRatio = 0.5f;
 
     public List<IHarvester> managedHarvesters = new List<IHarvester>();
-    private List<IResource> resourcesInRange;
+    private HashSet<IResource> knownResources = new HashSet<IResource>();
 
 	void Start () {
         squaredDetectionRadius = resourceDetectionRadius * resourceDetectionRadius;
-        resourcesInRange = getResourcesInRange();
-        Debug.Assert(resourcesInRange != null);
-        GlobalRegister.registerResourceChangeListener((IListChangeListener<IResource>)this);
+        //knownResources = getResourcesInRange();
+        Debug.Assert(knownResources != null);
+        //GlobalRegister.registerResourceChangeListener((IListChangeListener<IResource>)this);
     }
 
     public void onListItemAdded(IResource resource) {
         if (isInRange(resource.getPosition())) {
-            resourcesInRange.Add(resource);
+            knownResources.Add(resource);
         }
     }
 
     public void onListItemRemoved(IResource resource) {
-        resourcesInRange.Remove(resource);
+        knownResources.Remove(resource);
     }
 
     /**
@@ -120,7 +121,8 @@ public class Refinery : MonoBehaviour, IStockpile, IListChangeListener<IResource
         if (!managedHarvesters.Contains(harvester)) {
             throw new KeyNotFoundException("getHarvesterTarget() called with unregistered harvester");
         }
-        List<IResource> resourceTargets = new List<IResource>(resourcesInRange);
+        knownResources.RemoveWhere(entry => entry == null || entry.Equals(null));
+        List<IResource> resourceTargets = new List<IResource>(knownResources);
         IResource best = harvester.getTargetResource();
         double bestScore = 0;
         if (best != null) {
@@ -218,7 +220,7 @@ public class Refinery : MonoBehaviour, IStockpile, IListChangeListener<IResource
     }
 
     private int getResourceInRangeCount() {
-        return resourcesInRange.Count;
+        return knownResources.Count;
     }
 
     public Vector3 getPosition() {
@@ -227,5 +229,9 @@ public class Refinery : MonoBehaviour, IStockpile, IListChangeListener<IResource
 
     public GameObject getGameObject() {
         return gameObject;
+    }
+
+    public void reportResources(List<IResource> resources) {
+        knownResources.UnionWith(resources);
     }
 }
