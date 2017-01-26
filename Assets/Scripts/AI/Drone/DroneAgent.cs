@@ -21,7 +21,7 @@ public class DroneAgent : MobileAgent, IHarvester {
     private bool decommissioned = false;
 
 	void Start () {
-        setSpeed(10f);
+        base.start(10f);
         health = 1;
     }
 

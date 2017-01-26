@@ -13,7 +13,7 @@ public class ScoutAgent : MobileAgent, IScout {
 
     // Use this for initialization
     void Start () {
-        setSpeed(10f);
+        base.start(10f);
         health = 1;
 	}
 	

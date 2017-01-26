@@ -10,6 +10,11 @@ public abstract class MobileAgent : BaseAgent {
     private Vector3 currentVelocity = Vector3.zero;
     private float decelerationBuffer = 1f;
 
+    protected void start(float speed) {
+        setSpeed(speed);
+        GlobalRegister.addMobileAgent(this);
+    }
+
     public void setSpeed(float val) {
         terminalSpeed = val / 10f;
         acceleration = (val / 10f) / 2f;
