@@ -1,29 +1,34 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Node : MonoBehaviour {
+namespace PathGen {
+    public class Node : MonoBehaviour {
 
-    public List<GameObject> linkToNodesObjs;
-    private List<Node> knownNodes;
+        public List<GameObject> childNodeObjects;
+        private Dictionary<Node, double> connectedNodes = new Dictionary<Node, double>();
 
-    void Awake () {
-        knownNodes = new List<Node>();
-        foreach (GameObject node in linkToNodesObjs) {
-            Node nodeComponent = node.GetComponent<Node>();
-            if (nodeComponent != null) {
-                knownNodes.Add(nodeComponent);
-            } else {
-                Debug.LogWarning("Node.linkToNodesObjs contained a gameobject with no Node component");
+        void Awake() {
+            Vector3 thisPosition = getPosition();
+            foreach (GameObject node in childNodeObjects) {
+                Node nodeComponent = node.GetComponent<Node>();
+                if (nodeComponent != null) {
+                    connectedNodes.Add(nodeComponent, Vector3.Distance(thisPosition, node.transform.position));
+                } else {
+                    Debug.LogWarning("Node.linkToNodesObjs contained a gameobject with no Node component");
+                }
             }
         }
-    }
-	
-	void Update () {
-		
-	}
 
-    public List<Node> getKnownNodes() {
-        return knownNodes;
+        public Dictionary<Node, double> getConnectedNodes() {
+            return connectedNodes;
+        }
+
+        public void addNodeConnection(Node node) {
+            connectedNodes.Add(node, Vector3.Distance(getPosition(), node.transform.position));
+        }
+
+        public Vector3 getPosition() {
+            return gameObject.transform.position;
+        }
     }
 }
