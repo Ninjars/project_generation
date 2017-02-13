@@ -7,32 +7,49 @@ namespace PathGen {
         public GameObject startingNodeObj;
         public IPathMeshBuilder pathMeshGenerator;
         private HashSet<Node> nodes;
+        private HashSet<NodeConnection> connections;
 
         void Start() {
-            Node nodeComponent = startingNodeObj.GetComponent<Node>();
-            Debug.Assert(nodeComponent != null, "PathwayGenerator given a starting object that wasn't a node");
+            Node staringNode = startingNodeObj.GetComponent<Node>();
+            Debug.Assert(staringNode != null, "PathwayGenerator given a starting object that wasn't a node");
             nodes = new HashSet<Node>();
-            addConnectedNodes(nodes, nodeComponent);
+            connections = new HashSet<NodeConnection>();
+            traverseNodes(nodes, connections, staringNode);
 
+            IPathMeshBuilder pathMeshGenerator = GetComponent<IPathMeshBuilder>();
+            Debug.Assert(pathMeshGenerator != null, "requires a pathMeshBuilder implementation attached");
         }
 
-        private void addConnectedNodes(HashSet<Node> knownNodes, Node rootNode) {
+        private void traverseNodes(HashSet<Node> knownNodes, HashSet<NodeConnection> connections, Node rootNode) {
             knownNodes.Add(rootNode);
-            foreach (Node node in rootNode.getConnectedNodes().Keys) {
-                if (!knownNodes.Contains(node)) {
-                    addConnectedNodes(knownNodes, node);
+            HashSet<NodeConnection> iterConnections = new HashSet<NodeConnection>(rootNode.getConnections());
+            foreach (NodeConnection nodeConnection in iterConnections) {
+                Node nextNode = nodeConnection.getOther(rootNode);
+                Debug.Assert(nextNode != null, "connections should always have the current node in them");
+                nextNode.addConnection(nodeConnection);
+                if (!connections.Contains(nodeConnection)) {
+                    connections.Add(nodeConnection);
+                    traverseNodes(knownNodes, connections, nextNode);
                 }
             }
         }
 
         void OnDrawGizmos() {
+            if (!Application.isPlaying) {
+                return;
+            }
+            Gizmos.color = Color.blue;
             foreach (Node node in nodes) {
-                Gizmos.color = Color.blue;
                 Gizmos.DrawCube(node.getPosition(), Vector3.one);
-                Gizmos.color = Random.ColorHSV();
-                foreach (Node connectedNode in node.getConnectedNodes().Keys) {
-                    Gizmos.DrawLine(node.getPosition(), connectedNode.getPosition());
-                }
+            }
+            foreach (NodeConnection connection in connections) {
+                Vector3 a = connection.getA().getPosition();
+                Vector3 b = connection.getB().getPosition();
+                Vector3 halfway = (b - a) / 2 + a;
+                Gizmos.color = Color.green;
+                Gizmos.DrawLine(a, halfway);
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(halfway, b);
             }
         }
 
