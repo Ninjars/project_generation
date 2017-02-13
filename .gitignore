@@ -4,9 +4,9 @@
 Temp/
 Library/
 
-# ===================================== #
-# Visual Studio / MonoDevelop generated #
-# ===================================== #
+# =============================================== #
+# Visual Studio / MonoDevelop / Consulo generated #
+# =============================================== #
 ExportedObj/
 obj/
 *.svd
@@ -18,6 +18,8 @@ obj/
 *.user
 *.unityproj
 *.booproj
+.consulo/workspace.xml
+.consulo/modules.xml
 
 # ============ #
 # OS generated #
