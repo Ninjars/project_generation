@@ -6,6 +6,7 @@ namespace PathGen {
     public class PathwayGenerator : MonoBehaviour {
         public GameObject startingNodeObj;
         public IPathMeshBuilder pathMeshGenerator;
+        public Material pathMaterial;
         private HashSet<Node> nodes;
         private HashSet<NodeConnection> connections;
 
@@ -18,6 +19,16 @@ namespace PathGen {
 
             IPathMeshBuilder pathMeshGenerator = GetComponent<IPathMeshBuilder>();
             Debug.Assert(pathMeshGenerator != null, "requires a pathMeshBuilder implementation attached");
+
+            foreach (NodeConnection connection in connections) {
+                Mesh mesh = pathMeshGenerator.generateMesh(connection.getA().getPosition(), connection.getB().getPosition());
+                GameObject container = new GameObject();
+                container.transform.parent = gameObject.transform;
+                MeshFilter meshFilter = container.AddComponent<MeshFilter>();
+                meshFilter.mesh = mesh;
+                MeshRenderer meshRenderer = container.AddComponent<MeshRenderer>();
+                meshRenderer.material = pathMaterial;
+            }
         }
 
         private void traverseNodes(HashSet<Node> knownNodes, HashSet<NodeConnection> connections, Node rootNode) {
