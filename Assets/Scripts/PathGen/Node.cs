@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace PathGen {
-    public class Node : MonoBehaviour {
+    public class Node : MonoBehaviour, IClickListener {
 
         public List<GameObject> childNodeObjects;
         private HashSet<NodeConnection> connections = new HashSet<NodeConnection>();
@@ -16,7 +16,22 @@ namespace PathGen {
                     Debug.LogWarning("Node.linkToNodesObjs contained a gameobject with no Node component");
                 }
             }
+
+            for (int i = 0; i < transform.childCount; i++) {
+                GameObject childGameObject = transform.GetChild(i).gameObject;
+                if(childGameObject.GetComponent<ParentNotifier>() == null) {
+                    childGameObject.AddComponent<ParentNotifier>().listener = this;
+                }
+            }
         }
+
+        #region IClickListener implementation
+
+        public void onClick() {
+            Debug.Log("Node.onClick()");
+        }
+
+        #endregion
 
         public HashSet<NodeConnection> getConnections() {
             return connections;
