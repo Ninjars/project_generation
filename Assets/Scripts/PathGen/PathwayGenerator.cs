@@ -46,22 +46,22 @@ namespace PathGen {
         }
 
         void OnDrawGizmos() {
-            if (!Application.isPlaying) {
-                return;
-            }
-            Gizmos.color = Color.blue;
-            foreach (Node node in nodes) {
-                Gizmos.DrawCube(node.getPosition(), Vector3.one);
-            }
-            foreach (NodeConnection connection in connections) {
-                Vector3 a = connection.getA().getPosition();
-                Vector3 b = connection.getB().getPosition();
-                Vector3 halfway = (b - a) / 2 + a;
-                Gizmos.color = Color.green;
-                Gizmos.DrawLine(a, halfway);
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(halfway, b);
-            }
+//            if (!Application.isPlaying) {
+//                return;
+//            }
+//            Gizmos.color = Color.blue;
+//            foreach (Node node in nodes) {
+//                Gizmos.DrawCube(node.getPosition(), Vector3.one);
+//            }
+//            foreach (NodeConnection connection in connections) {
+//                Vector3 a = connection.getA().getPosition();
+//                Vector3 b = connection.getB().getPosition();
+//                Vector3 halfway = (b - a) / 2 + a;
+//                Gizmos.color = Color.green;
+//                Gizmos.DrawLine(a, halfway);
+//                Gizmos.color = Color.red;
+//                Gizmos.DrawLine(halfway, b);
+//            }
         }
 
         void Update() {
