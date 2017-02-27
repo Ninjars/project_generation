@@ -29,6 +29,7 @@ namespace PathGen {
 
         public void onClick() {
             Debug.Log("Node.onClick()");
+            NodeInteractionManager.onInteraction(this);
         }
 
         #endregion
