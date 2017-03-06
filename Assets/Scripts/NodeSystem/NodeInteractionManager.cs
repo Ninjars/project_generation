@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Node {
-    public class NodeInteractionManager {
+    public class NodeInteractionManager : MonoBehaviour {
 
-        private static Node mFirstNode = null;
+        private Node mFirstNode = null;
+        private Plane mBaseCollisionPlane;
 
-        public static void onInteraction(Node node) {
+        public void onInteraction(Node node) {
             Debug.Log("NodeInteractionManager: onInteraction() " + node);
             if (node == null) {
                 clearInteraction();
@@ -18,16 +19,46 @@ namespace Node {
             }
         }
 
-        private static void beginInteraction(Node startNode) {
+        private void beginInteraction(Node startNode) {
             mFirstNode = startNode;
         }
 
-        private static void clearInteraction() {
+        private void clearInteraction() {
             mFirstNode = null;
         }
 
-        private static void endInteraction(Node endNode) {
+        private void endInteraction(Node endNode) {
             // TODO
+        }
+
+        void Awake() {
+            mBaseCollisionPlane = new Plane(Vector3.up, Vector3.zero);
+        }
+
+        void Update() {
+            if (Input.GetMouseButtonDown(0)) {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                float distance;
+                int mask = 1 << LayerMask.NameToLayer("nodes");
+                RaycastHit hit;
+                Physics.Raycast(ray, out hit, Mathf.Infinity, mask);
+                if (hit.collider != null) {
+                    Debug.Log("NodeInteractionManager: click on gameobject: " + hit.collider.gameObject);
+                    Node selectedNode = hit.collider.transform.parent.gameObject.GetComponent<Node>();
+                    Debug.Assert(selectedNode != null);
+                    if (mFirstNode == null) {
+                        beginInteraction(selectedNode);
+                    } else {
+                        endInteraction(selectedNode);
+                    }
+                } else {
+                    if (mBaseCollisionPlane.Raycast(ray, out distance)) {
+                        Vector3 hitPoint = ray.GetPoint(distance);
+                        Debug.Log("NodeInteractionManager: click at position: " + hitPoint);
+                        clearInteraction();
+                    }
+                }
+            }
         }
     }
 }
