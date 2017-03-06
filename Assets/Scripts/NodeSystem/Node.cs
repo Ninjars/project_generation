@@ -13,7 +13,8 @@ namespace Node {
             foreach (GameObject node in connectedNodes) {
                 Node nodeComponent = node.GetComponent<Node>();
                 if (nodeComponent != null) {
-                    connections.Add(new NodeConnection(this, nodeComponent));
+                    addConnection(nodeComponent);
+                    nodeComponent.addConnection(this);
                 } else {
                     Debug.LogWarning("Node.linkToNodesObjs contained a gameobject with no Node component");
                 }
