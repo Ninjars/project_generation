@@ -26,6 +26,17 @@ namespace Node {
 
         public void addConnection(Node node) {
             connections.Add(new NodeConnection(this, node));
+            GetComponent<NodeConnectionIndicator>().update();
+        }
+
+        public void removeConnection(Node node) {
+            connections.Remove(new NodeConnection(this, node));
+            GetComponent<NodeConnectionIndicator>().update();
+        }
+
+        public bool hasConnection(Node node) {
+            NodeConnection connection = new NodeConnection(this, node);
+            return connections.Contains(connection);
         }
 
         public Vector3 getPosition() {

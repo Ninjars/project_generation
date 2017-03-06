@@ -28,7 +28,17 @@ namespace Node {
         }
 
         private void endInteraction(Node endNode) {
-            // TODO
+            Debug.Assert(mFirstNode != null);
+            if (mFirstNode.hasConnection(endNode)) {
+                Debug.Log("NodeInteractionManager: removing connection " + mFirstNode + ", " + endNode);
+                mFirstNode.removeConnection(endNode);
+                endNode.removeConnection(mFirstNode);
+            } else {
+                Debug.Log("NodeInteractionManager: adding connection " + mFirstNode + ", " + endNode);
+                mFirstNode.addConnection(endNode);
+                endNode.addConnection(mFirstNode);
+            }
+            clearInteraction();
         }
 
         void Awake() {
