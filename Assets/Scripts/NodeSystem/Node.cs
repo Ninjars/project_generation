@@ -2,9 +2,11 @@
 using UnityEngine;
 
 namespace Node {
+    [RequireComponent(typeof(NodeConnectionIndicator))]
     public class Node : MonoBehaviour, IClickListener {
 
         public List<GameObject> connectedNodes;
+        public Material connectionLineMaterial;
         private HashSet<NodeConnection> connections = new HashSet<NodeConnection>();
 
         void Awake() {
@@ -44,6 +46,10 @@ namespace Node {
         public void addConnection(NodeConnection connection) {
             Debug.Assert(connection.getA().Equals(this) || connection.getB().Equals(this), "must contain this node to connect");
             connections.Add(connection);
+        }
+
+        public Material getConnectionLineMaterial() {
+            return connectionLineMaterial;
         }
 
         #region IClickListener implementation
