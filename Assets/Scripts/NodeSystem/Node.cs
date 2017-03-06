@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Node {
     [RequireComponent(typeof(NodeConnectionIndicator))]
-    public class Node : MonoBehaviour, IClickListener {
+    public class Node : MonoBehaviour {
 
         public List<GameObject> connectedNodes;
         public Material connectionLineMaterial;
@@ -16,13 +16,6 @@ namespace Node {
                     connections.Add(new NodeConnection(this, nodeComponent));
                 } else {
                     Debug.LogWarning("Node.linkToNodesObjs contained a gameobject with no Node component");
-                }
-            }
-
-            for (int i = 0; i < transform.childCount; i++) {
-                GameObject childGameObject = transform.GetChild(i).gameObject;
-                if(childGameObject.GetComponent<ParentNotifier>() == null) {
-                    childGameObject.AddComponent<ParentNotifier>().listener = this;
                 }
             }
         }
@@ -51,14 +44,5 @@ namespace Node {
         public Material getConnectionLineMaterial() {
             return connectionLineMaterial;
         }
-
-        #region IClickListener implementation
-
-        public void onClick() {
-            Debug.Log("Node.onClick()");
-            NodeInteractionManager.onInteraction(this);
-        }
-
-        #endregion
     }
 }
