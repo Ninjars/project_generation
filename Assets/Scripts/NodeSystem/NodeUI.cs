@@ -48,6 +48,7 @@ namespace Node {
             int totalSegments = gameNode.maxValue * 10;
             int currentSegments = gameNode.currentValue * 10;
             float deltaTheta = (float)(2.0 * Mathf.PI) / totalSegments;
+            float initialAngle = 0.5f * Mathf.PI;
 
             // draw current value
             if (currentSegments > 0) {
@@ -66,13 +67,13 @@ namespace Node {
                 lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 lineRenderer.receiveShadows = false;
 
-                float theta = 0f;
+                float theta = initialAngle;
                 for (int i = 0; i < currentSegments + 1; i++) {
                     float x = radius * Mathf.Cos(theta);
                     float z = radius * Mathf.Sin(theta);
                     Vector3 pos = new Vector3(x, z, 0);
                     tempPositions.Add(pos);
-                    theta += deltaTheta;
+                    theta -= deltaTheta;
                 }
                 lineRenderer.SetPositions(tempPositions.ToArray());
             }
@@ -93,13 +94,13 @@ namespace Node {
                 lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 lineRenderer.receiveShadows = false;
 
-                float theta = deltaTheta * currentSegments;
+                float theta = initialAngle - (deltaTheta * currentSegments);
                 for (int i = currentSegments; i < totalSegments + 1; i++) {
                     float x = radius * Mathf.Cos(theta);
                     float z = radius * Mathf.Sin(theta);
                     Vector3 pos = new Vector3(x, z, 0);
                     tempPositions.Add(pos);
-                    theta += deltaTheta;
+                    theta -= deltaTheta;
                 }
                 lineRenderer.SetPositions(tempPositions.ToArray());
             }
