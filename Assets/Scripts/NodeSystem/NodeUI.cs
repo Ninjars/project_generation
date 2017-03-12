@@ -38,8 +38,7 @@ namespace Node {
         }
 
         public void updateRenderer() {
-            //uiRoot.transform.position = gameObject.transform.position;
-            //uiRoot.transform.LookAt(Camera.main.transform);
+            uiRoot.transform.LookAt(Camera.main.transform);
             if (!shouldUpdate) {
                 return;
             }
@@ -59,6 +58,7 @@ namespace Node {
                 GameObject lineContainer = new GameObject();
                 lineContainer.transform.SetParent(uiRoot.transform);
                 lineContainer.transform.localPosition = Vector3.zero;
+                lineContainer.transform.rotation = uiRoot.transform.rotation;
                 lineRenderers.Add(lineContainer);
 
                 LineRenderer lineRenderer = lineContainer.AddComponent<LineRenderer>();
@@ -88,6 +88,7 @@ namespace Node {
                 GameObject lineContainer = new GameObject();
                 lineContainer.transform.SetParent(uiRoot.transform);
                 lineContainer.transform.localPosition = Vector3.zero;
+                lineContainer.transform.rotation = uiRoot.transform.rotation;
                 lineRenderers.Add(lineContainer);
 
                 LineRenderer lineRenderer = lineContainer.AddComponent<LineRenderer>();
