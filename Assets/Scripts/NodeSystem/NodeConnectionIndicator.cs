@@ -30,6 +30,8 @@ namespace Node {
                 connectionRenderer.material = lineMaterial;
                 connectionRenderer.startWidth = 0.25f;
                 connectionRenderer.endWidth = 0.25f;
+                connectionRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                connectionRenderer.receiveShadows = false;
                 connectionRenderer.SetPosition(0, connection.getA().getPosition());
                 connectionRenderer.SetPosition(1, connection.getB().getPosition());
                 lineRenderers.Add(container);
