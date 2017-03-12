@@ -18,12 +18,14 @@ namespace Node {
         private List<Vector3> tempPositions = new List<Vector3>();
 
         private void Awake() {
-            uiRoot = new GameObject();
-            uiRoot.transform.SetParent(gameObject.transform);
             gameNode = GetComponent<GameNode>();
         }
 
         void Start() {
+            uiRoot = new GameObject();
+            uiRoot.transform.SetParent(gameObject.transform);
+            uiRoot.transform.position = gameObject.transform.position;
+            uiRoot.name = "uiRoot";
             updateRenderer();
         }
 
@@ -36,7 +38,8 @@ namespace Node {
         }
 
         public void updateRenderer() {
-            uiRoot.transform.LookAt(Camera.main.transform);
+            //uiRoot.transform.position = gameObject.transform.position;
+            //uiRoot.transform.LookAt(Camera.main.transform);
             if (!shouldUpdate) {
                 return;
             }
@@ -53,11 +56,12 @@ namespace Node {
             // draw current value
             if (currentSegments > 0) {
                 tempPositions.Clear();
-                GameObject currentValueIndicator = new GameObject();
-                lineRenderers.Add(currentValueIndicator);
+                GameObject lineContainer = new GameObject();
+                lineContainer.transform.SetParent(uiRoot.transform);
+                lineContainer.transform.localPosition = Vector3.zero;
+                lineRenderers.Add(lineContainer);
 
-                currentValueIndicator.transform.SetParent(uiRoot.transform);
-                LineRenderer lineRenderer = currentValueIndicator.AddComponent<LineRenderer>();
+                LineRenderer lineRenderer = lineContainer.AddComponent<LineRenderer>();
                 lineRenderer.material = activeValueMaterial;
                 lineRenderer.startWidth = 0.25f;
                 lineRenderer.endWidth = 0.25f;
@@ -81,10 +85,12 @@ namespace Node {
             // draw maxValue
             if (currentSegments < totalSegments) {
                 tempPositions.Clear();
-                GameObject maxValueIndicator = new GameObject();
-                lineRenderers.Add(maxValueIndicator);
-                maxValueIndicator.transform.SetParent(uiRoot.transform);
-                LineRenderer lineRenderer = maxValueIndicator.AddComponent<LineRenderer>();
+                GameObject lineContainer = new GameObject();
+                lineContainer.transform.SetParent(uiRoot.transform);
+                lineContainer.transform.localPosition = Vector3.zero;
+                lineRenderers.Add(lineContainer);
+
+                LineRenderer lineRenderer = lineContainer.AddComponent<LineRenderer>();
                 lineRenderer.material = passiveValueMaterial;
                 lineRenderer.startWidth = 0.25f;
                 lineRenderer.endWidth = 0.25f;
