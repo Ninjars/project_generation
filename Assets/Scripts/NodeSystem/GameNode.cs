@@ -34,6 +34,10 @@ namespace Node {
             } else {
                 elapsedIncreaseSeconds = 0;
             }
+
+        public Vector3 getPosition() {
+            return gameObject.transform.position;
+        }
         }
     }
 }
