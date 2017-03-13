@@ -56,5 +56,13 @@ namespace Node {
         public Material getConnectionLineMaterial() {
             return connectionLineMaterial;
         }
+
+        public List<Node> getConnectedNodes() {
+            List<Node> nodes = new List<Node>(connections.Count);
+            foreach (NodeConnection connection in connections) {
+                nodes.Add(connection.getOther(this));
+            }
+            return nodes;
+        }
     }
 }
