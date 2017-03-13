@@ -128,6 +128,8 @@ MonoBehaviour:
   currentValue: 0
   maxValue: 10
   secondsPerIncrease: 1
+  secondsPerEmission: 0.25
+  packet: {fileID: 1893740232287916, guid: 45b3c3f72cc664bc69adfd72af73ae5e, type: 2}
 --- !u!114 &114795283899743040
 MonoBehaviour:
   m_ObjectHideFlags: 1
