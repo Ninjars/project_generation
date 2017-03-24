@@ -60,6 +60,10 @@ namespace Node {
             }
         }
 
+        public void setOwnerId(int activePlayerId) {
+            gameObject.GetComponentInChildren<MeshRenderer>().material = GameObject.FindWithTag("GameController").GetComponent<Globals>().playerMaterials[activePlayerId];
+        }
+
         private void sendPacketToNode(Node node) {
             GameNode gameNode = node.gameObject.GetComponent<GameNode>();
             GameObject packetObj = Instantiate(packet, transform.position, transform.rotation);

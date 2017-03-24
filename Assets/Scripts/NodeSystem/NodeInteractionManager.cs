@@ -14,6 +14,8 @@ namespace Node {
         private Plane baseCollisionPlane;
         private InteractionMode mode = InteractionMode.CONNECT;
 
+        private int activePlayerId = 1;
+
         void Awake() {
             baseCollisionPlane = new Plane(Vector3.up, Vector3.zero);
         }
@@ -23,6 +25,14 @@ namespace Node {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 checkForNodeInteraction(ray);
             }
+
+            if (Input.GetButton("ChoosePlayer1")) {
+                activePlayerId = 1;
+            } else if (Input.GetButton("ChoosePlayer2")) {
+                activePlayerId = 2;
+            } else if (Input.GetButton("ChoosePlayer0")) {
+                activePlayerId = 0;
+            } 
         }
 
         public void setInteractionMode(InteractionMode mode) {
@@ -72,6 +82,7 @@ namespace Node {
         private void beginInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: beginInteraction()");
             selectedNode = node;
+            node.setOwnerId(activePlayerId);
         }
 
         private void endInteraction(GameNode node) {
