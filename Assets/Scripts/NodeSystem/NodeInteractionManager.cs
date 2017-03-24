@@ -68,7 +68,7 @@ namespace Node {
 
         private bool onInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: onInteraction() " + node);
-            if (node == null) {
+            if (node == null || node.Equals(selectedNode)) {
                 clearInteraction();
                 return false;
             } else if (selectedNode == null) {
