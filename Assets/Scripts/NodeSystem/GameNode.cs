@@ -75,5 +75,17 @@ namespace Node {
             currentValue = Mathf.Max(currentValue--, 0);
             nodeUi.hasUpdate();
         }
+
+        public bool hasConnection(GameNode otherNode) {
+            return nodeComponent.hasConnection(otherNode.nodeComponent);
+        }
+
+        public void removeConnection(GameNode otherNode) {
+            nodeComponent.removeConnection(otherNode.nodeComponent);
+        }
+
+        public void addConnection(GameNode otherNode) {
+            nodeComponent.addConnection(otherNode.nodeComponent);
+        }
     }
 }

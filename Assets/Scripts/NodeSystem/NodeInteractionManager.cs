@@ -10,7 +10,7 @@ namespace Node {
             MOVE
         }
 
-        private Node selectedNode = null;
+        private GameNode selectedNode = null;
         private Plane baseCollisionPlane;
         private InteractionMode mode = InteractionMode.CONNECT;
 
@@ -43,7 +43,7 @@ namespace Node {
             Physics.Raycast(ray, out hit, Mathf.Infinity, mask);
             if (hit.collider != null) {
                 Debug.Log("NodeInteractionManager: click on gameobject: " + hit.collider.gameObject);
-                Node selectedNode = hit.collider.transform.parent.gameObject.GetComponent<Node>();
+                GameNode selectedNode = hit.collider.transform.parent.gameObject.GetComponent<GameNode>();
                 return onInteraction(selectedNode);
 
             } else {
@@ -56,7 +56,7 @@ namespace Node {
             }
         }
 
-        private bool onInteraction(Node node) {
+        private bool onInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: onInteraction() " + node);
             if (node == null) {
                 clearInteraction();
@@ -69,12 +69,12 @@ namespace Node {
             return true;
         }
 
-        private void beginInteraction(Node node) {
+        private void beginInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: beginInteraction()");
             selectedNode = node;
         }
 
-        private void endInteraction(Node node) {
+        private void endInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: endInteraction()");
             Debug.Assert(selectedNode != null);
             switch (mode) {
@@ -90,7 +90,7 @@ namespace Node {
             clearInteraction();
         }
 
-        private void connectionInteraction(Node node) {
+        private void connectionInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: connectionInteraction()");
             if (selectedNode.hasConnection(node)) {
                 Debug.Log("NodeInteractionManager: removing connection " + selectedNode + ", " + node);
@@ -103,7 +103,7 @@ namespace Node {
             }
         }
 
-        private void moveInteraction(Node node) {
+        private void moveInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: moveInteraction()");
             if (selectedNode.hasConnection(node)) {
                 Debug.Log("NodeInteractionManager: moving " + selectedNode + " to " + node);
