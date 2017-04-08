@@ -33,7 +33,7 @@ namespace Node {
                 return false;
             }
             NodeConnection other = (NodeConnection) obj;
-            return (a.Equals(other.a) || a.Equals(other.b)) && (b.Equals(other.a) || b.Equals(other.b));
+            return (a.Equals(other.a) && b.Equals(other.b));
         }
 
         public override int GetHashCode() {

@@ -106,11 +106,12 @@ namespace Node {
             if (selectedNode.hasConnection(node)) {
                 Debug.Log("NodeInteractionManager: removing connection " + selectedNode + ", " + node);
                 selectedNode.removeConnection(node);
-                node.removeConnection(selectedNode);
             } else {
                 Debug.Log("NodeInteractionManager: adding connection " + selectedNode + ", " + node);
                 selectedNode.addConnection(node);
-                node.addConnection(selectedNode);
+                if (selectedNode.isOwnedBySamePlayer(node)) {
+                    node.removeConnection(selectedNode);
+                }
             }
         }
 

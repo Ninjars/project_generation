@@ -10,6 +10,7 @@ namespace Node {
         public bool isActive = true;
         public int currentValue = 0;
         public int maxValue = 10;
+        public int ownerId = 0;
         public float secondsPerIncrease = 1f;
         public float secondsPerEmission = 1f;
 
@@ -27,7 +28,7 @@ namespace Node {
         }
 
         void Start() {
-
+            setOwnerId(ownerId);
         }
 
         void Update() {
@@ -61,7 +62,12 @@ namespace Node {
         }
 
         public void setOwnerId(int activePlayerId) {
+            ownerId = activePlayerId;
             gameObject.GetComponentInChildren<MeshRenderer>().material = GameObject.FindWithTag("GameController").GetComponent<Globals>().playerMaterials[activePlayerId];
+        }
+
+        public bool isOwnedBySamePlayer(GameNode otherNode) {
+            return otherNode.ownerId == ownerId;
         }
 
         private void sendPacketToNode(Node node) {
