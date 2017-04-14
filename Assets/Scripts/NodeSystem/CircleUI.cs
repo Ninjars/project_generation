@@ -5,85 +5,69 @@ using UnityEngine;
 namespace Node {
     [RequireComponent(typeof(GameNode))]
     public class CircleUI : NodeUI {
-        private List<GameObject> lineRenderers = new List<GameObject>();
-        private List<Vector3> tempPositions = new List<Vector3>();
+
+        public int circlePoints = 30;
+        public float spacing = 0.5f;
+        public float width = 0.1f;
+
+        private List<LineRenderer> lines;
+
+        protected override void init() {
+            lines = createCircles(gameNode.maxValue, radius, spacing);
+        }
+
+        private List<LineRenderer> createCircles(int count, float radius, float spacing) {
+            List<LineRenderer> renderers = new List<LineRenderer>();
+            for (int i = 0; i < count; i++) {
+                float lineRadius = radius + (spacing * i);
+                renderers.Add(createCircle(circlePoints, lineRadius));
+            }
+            return renderers;
+        }
+
+        private LineRenderer createCircle(int pointCount, float radius) {
+            GameObject lineContainer = new GameObject();
+            lineContainer.transform.SetParent(uiRoot.transform);
+            lineContainer.transform.localPosition = Vector3.zero;
+            lineContainer.transform.rotation = uiRoot.transform.rotation;
+
+            LineRenderer lineRenderer = lineContainer.AddComponent<LineRenderer>();
+            lineRenderer.material = passiveValueMaterial;
+            lineRenderer.startWidth = width;
+            lineRenderer.endWidth = width;
+            lineRenderer.numPositions = pointCount+1;
+            lineRenderer.useWorldSpace = false;
+            lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            lineRenderer.receiveShadows = false;
+
+            float deltaTheta = (2.0f * Mathf.PI) / pointCount;
+            float theta = 0;// 0.5f * Mathf.PI;
+            List<Vector3> tempPositions = new List<Vector3>();
+            for (int i = 0; i < pointCount+1; i++) {
+                float x = radius * Mathf.Cos(theta);
+                float z = radius * Mathf.Sin(theta);
+                Vector3 pos = new Vector3(x, z, 0);
+                tempPositions.Add(pos);
+                theta += deltaTheta;
+            }
+            lineRenderer.SetPositions(tempPositions.ToArray());
+            return lineRenderer;
+        }
 
         public override void updateRenderer() {
             uiRoot.transform.LookAt(Camera.main.transform);
             if (!shouldUpdate) {
                 return;
             }
-            foreach (GameObject oldRenderer in lineRenderers) {
-                GameObject.Destroy(oldRenderer);
-            }
-            lineRenderers.Clear();
-
-            int totalSegments = gameNode.maxValue * 10;
-            int currentSegments = gameNode.currentValue * 10;
-            float deltaTheta = (float)(2.0 * Mathf.PI) / totalSegments;
-            float initialAngle = 0.5f * Mathf.PI;
-
-            // draw current value
-            if (currentSegments > 0) {
-                tempPositions.Clear();
-                GameObject lineContainer = new GameObject();
-                lineContainer.transform.SetParent(uiRoot.transform);
-                lineContainer.transform.localPosition = Vector3.zero;
-                lineContainer.transform.rotation = uiRoot.transform.rotation;
-                lineRenderers.Add(lineContainer);
-
-                LineRenderer lineRenderer = lineContainer.AddComponent<LineRenderer>();
-                lineRenderer.material = activeValueMaterial;
-                lineRenderer.startWidth = 0.25f;
-                lineRenderer.endWidth = 0.25f;
-                lineRenderer.numPositions = currentSegments + 1;
-                lineRenderer.numCornerVertices = 12;
-                lineRenderer.useWorldSpace = false;
-                lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                lineRenderer.receiveShadows = false;
-
-                float theta = initialAngle;
-                for (int i = 0; i < currentSegments + 1; i++) {
-                    float x = radius * Mathf.Cos(theta);
-                    float z = radius * Mathf.Sin(theta);
-                    Vector3 pos = new Vector3(x, z, 0);
-                    tempPositions.Add(pos);
-                    theta -= deltaTheta;
+            for (int i = 0; i < lines.Count; i++) {
+                Material material;
+                if (i < gameNode.currentValue) {
+                    material = activeValueMaterial;
+                } else {
+                    material = passiveValueMaterial;
                 }
-                lineRenderer.SetPositions(tempPositions.ToArray());
+                lines[i].material = material;
             }
-
-            // draw maxValue
-            if (currentSegments < totalSegments) {
-                tempPositions.Clear();
-                GameObject lineContainer = new GameObject();
-                lineContainer.transform.SetParent(uiRoot.transform);
-                lineContainer.transform.localPosition = Vector3.zero;
-                lineContainer.transform.rotation = uiRoot.transform.rotation;
-                lineRenderers.Add(lineContainer);
-
-                LineRenderer lineRenderer = lineContainer.AddComponent<LineRenderer>();
-                lineRenderer.material = passiveValueMaterial;
-                lineRenderer.startWidth = 0.25f;
-                lineRenderer.endWidth = 0.25f;
-                lineRenderer.numCornerVertices = 12;
-                lineRenderer.numPositions = totalSegments - currentSegments + 1;
-                lineRenderer.useWorldSpace = false;
-                lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                lineRenderer.receiveShadows = false;
-
-                float theta = initialAngle - (deltaTheta * currentSegments);
-                for (int i = currentSegments; i < totalSegments + 1; i++) {
-                    float x = radius * Mathf.Cos(theta);
-                    float z = radius * Mathf.Sin(theta);
-                    Vector3 pos = new Vector3(x, z, 0);
-                    tempPositions.Add(pos);
-                    theta -= deltaTheta;
-                }
-                lineRenderer.SetPositions(tempPositions.ToArray());
-            }
-            tempPositions.Clear();
-            shouldUpdate = false;
         }
     }
 }

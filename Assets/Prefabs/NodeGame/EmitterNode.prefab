@@ -156,7 +156,10 @@ MonoBehaviour:
   activeValueMaterial: {fileID: 2100000, guid: fd30a720523e74d42b353990e9c02218, type: 2}
   passiveValueMaterial: {fileID: 2100000, guid: da6ffc6aef3578743920d2c4997b9d3e,
     type: 2}
-  radius: 1
+  radius: 0.7
+  circlePoints: 30
+  spacing: 0.15
+  width: 0.1
 --- !u!114 &114952711195848816
 MonoBehaviour:
   m_ObjectHideFlags: 1
