@@ -20,9 +20,7 @@ namespace Node {
             if (!shouldUpdate) {
                 return;
             }
-            Debug.Log("update  " + gameNode.currentValue);
             for (int i = 0; i < segmentRenderers.Count; i++) {
-                Debug.Log(">>  " + i);
                 Material segmentMaterial;
                 if (i < gameNode.currentValue) {
                     segmentMaterial = activeValueMaterial;
