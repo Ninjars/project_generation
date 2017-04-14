@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 114795283899743040}
   - component: {fileID: 114952711195848816}
   - component: {fileID: 114934562705056898}
-  - component: {fileID: 114356562562874468}
+  - component: {fileID: 114095209466467644}
   m_Layer: 10
   m_Name: Node
   m_TagString: Untagged
@@ -113,7 +113,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1989109961916156}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114356562562874468
+--- !u!114 &114095209466467644
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -121,15 +121,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1384840293537512}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12f17ab5fceba674ca637270704a168c, type: 3}
+  m_Script: {fileID: 11500000, guid: 3784469f8101eac45a54270f3bb81bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
   currentValue: 0
+  isActive: 1
   maxValue: 10
-  secondsPerIncrease: 1
-  secondsPerEmission: 0.25
+  ownerId: 0
   packet: {fileID: 1893740232287916, guid: 45b3c3f72cc664bc69adfd72af73ae5e, type: 2}
+  secondsPerIncrease: 1
+  secondsPerEmission: 0.5
 --- !u!114 &114795283899743040
 MonoBehaviour:
   m_ObjectHideFlags: 1

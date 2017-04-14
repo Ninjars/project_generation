@@ -12,6 +12,7 @@ namespace Node {
         private float decelerationBuffer = 1f;
         private float completionDistance = 0.5f;
         public GameNode target;
+        private int ownerId;
 
     	// Use this for initialization
     	void Start () {
@@ -47,11 +48,18 @@ namespace Node {
             transform.position += currentVelocity * Time.fixedDeltaTime;
 
             if (dist <= completionDistance) {
-                Debug.Log("Packet: arrived");
                 currentVelocity = Vector3.zero;
                 target.onPacket(this);
                 GameObject.Destroy(gameObject);
             }
+        }
+
+        public void setOwnerId(int id) {
+            ownerId = id;
+        }
+
+        public int getOwnerId() {
+            return ownerId;
         }
     }
 }
