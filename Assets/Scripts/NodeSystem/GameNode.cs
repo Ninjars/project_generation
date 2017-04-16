@@ -11,6 +11,7 @@ namespace Node {
         public bool isActive = true;
         public int maxValue = 10;
         public int ownerId = 0;
+        public int maxOutboundConnections = -1;
 
         public GameObject packet;
 
@@ -28,7 +29,8 @@ namespace Node {
 
         public void setOwnerId(int activePlayerId) {
             ownerId = activePlayerId;
-            gameObject.GetComponentInChildren<MeshRenderer>().material = GameObject.FindWithTag("GameController").GetComponent<Globals>().playerMaterials[activePlayerId];
+            gameObject.GetComponentInChildren<MeshRenderer>().material = 
+                GameObject.FindWithTag("GameController").GetComponent<Globals>().playerMaterials[activePlayerId];
         }
 
         public bool isOwnedBySamePlayer(GameNode otherNode) {
@@ -54,7 +56,12 @@ namespace Node {
         }
 
         public void addConnection(GameNode otherNode) {
-            nodeComponent.addConnection(otherNode.nodeComponent);
+            if (maxOutboundConnections < 0 || nodeComponent.getConnections().Count < maxOutboundConnections) {
+                nodeComponent.addConnection(otherNode.nodeComponent);
+            } else if (maxOutboundConnections == 1) {
+                nodeComponent.removeAllConnections();
+                nodeComponent.addConnection(otherNode.nodeComponent);
+            }
         }
     }
 }
