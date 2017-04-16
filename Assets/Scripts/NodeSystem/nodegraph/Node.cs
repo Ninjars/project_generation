@@ -35,6 +35,11 @@ namespace Node {
             GetComponent<NodeConnectionIndicator>().update();
         }
 
+        public void removeAllConnections() {
+            connections.Clear();
+            GetComponent<NodeConnectionIndicator>().update();
+        }
+
         public bool hasConnection(Node node) {
             NodeConnection connection = new NodeConnection(this, node);
             return connections.Contains(connection);
