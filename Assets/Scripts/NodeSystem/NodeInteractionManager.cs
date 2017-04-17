@@ -68,7 +68,7 @@ namespace Node {
 
         private bool onInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: onInteraction() " + node);
-            if (node == null || node.Equals(selectedNode)) {
+            if (node == null) {
                 clearInteraction();
                 return false;
             } else if (selectedNode == null) {
@@ -88,14 +88,20 @@ namespace Node {
         private void endInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: endInteraction()");
             Debug.Assert(selectedNode != null);
-            switch (mode) {
-                case InteractionMode.CONNECT: {
-                    connectionInteraction(node);
-                    break;
-                }
-                case InteractionMode.MOVE: {
-                    moveInteraction(node);
-                    break;
+            if (node.Equals(selectedNode)) {
+                selectedNode.onSelfInteraction();
+            } else {
+                switch (mode) {
+                case InteractionMode.CONNECT:
+                    {
+                        connectionInteraction(node);
+                        break;
+                    }
+                case InteractionMode.MOVE:
+                    {
+                        moveInteraction(node);
+                        break;
+                    }
                 }
             }
             clearInteraction();

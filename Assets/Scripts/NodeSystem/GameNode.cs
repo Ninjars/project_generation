@@ -63,5 +63,10 @@ namespace Node {
                 nodeComponent.addConnection(otherNode.nodeComponent);
             }
         }
+
+        public void onSelfInteraction() {
+            Debug.Log("GameNode: onSelfInteraction()");
+            nodeComponent.removeAllConnections();
+        }
     }
 }
