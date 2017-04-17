@@ -12,6 +12,7 @@ namespace Node {
         public int maxValue = 10;
         public int ownerId = -1;
         public int maxOutboundConnections = -1;
+        public bool allowsInboundConnections = true;
 
         public GameObject packet;
 
@@ -56,6 +57,10 @@ namespace Node {
         }
 
         public void addConnection(GameNode otherNode) {
+            if (!otherNode.allowsInboundConnections) {
+                Debug.Log("GameNode: ERROR: attempted to connect to node that doesn't allow inbound connections");
+                return;
+            }
             if (maxOutboundConnections < 0 || nodeComponent.getConnections().Count < maxOutboundConnections) {
                 nodeComponent.addConnection(otherNode.nodeComponent);
             } else if (maxOutboundConnections == 1) {

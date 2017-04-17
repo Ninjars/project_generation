@@ -129,6 +129,7 @@ MonoBehaviour:
   maxValue: 3
   ownerId: 0
   maxOutboundConnections: 1
+  allowsInboundConnections: 0
   packet: {fileID: 1893740232287916, guid: 45b3c3f72cc664bc69adfd72af73ae5e, type: 2}
   secondsPerIncrease: 1
   secondsPerEmission: 0.5

@@ -109,7 +109,9 @@ namespace Node {
 
         private void connectionInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: connectionInteraction()");
-            if (selectedNode.hasConnection(node)) {
+            if (!node.allowsInboundConnections) {
+                Debug.Log("NodeInteractionManager: not allowed to connect to " + node);
+            } else if (selectedNode.hasConnection(node)) {
                 Debug.Log("NodeInteractionManager: removing connection " + selectedNode + ", " + node);
                 selectedNode.removeConnection(node);
             } else {
