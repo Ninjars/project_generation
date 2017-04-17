@@ -10,7 +10,7 @@ namespace Node {
         public int currentValue = 0;
         public bool isActive = true;
         public int maxValue = 10;
-        public int ownerId = 0;
+        public int ownerId = -1;
         public int maxOutboundConnections = -1;
 
         public GameObject packet;

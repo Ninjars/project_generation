@@ -30,8 +30,8 @@ namespace Node {
                 activePlayerId = 1;
             } else if (Input.GetButton("ChoosePlayer2")) {
                 activePlayerId = 2;
-            } else if (Input.GetButton("ChoosePlayer0")) {
-                activePlayerId = 0;
+            } else if (Input.GetButton("ChoosePlayerNeutral")) {
+                activePlayerId = -1;
             } 
         }
 
