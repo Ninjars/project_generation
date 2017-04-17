@@ -44,7 +44,12 @@ namespace Node {
             if (ownerMatches) {
                 incrementValue();
             } else {
-                currentValue = Mathf.Max(currentValue - 1, 0);
+                if (currentValue == 0) {
+                    nodeComponent.removeAllConnections();
+                    setOwnerId(packet.getOwnerId());
+                } else {
+                    currentValue = Mathf.Max(currentValue - 1, 0);
+                }
             }
             nodeUi.hasUpdate();
         }
