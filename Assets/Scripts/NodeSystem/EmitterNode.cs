@@ -11,7 +11,7 @@ namespace Node {
             if (currentValue < maxValue) {
                 elapsedIncreaseSeconds += Time.deltaTime;
                 if (elapsedIncreaseSeconds >= secondsPerIncrease) {
-                    incrementValue();
+                    changeValue(1);
                     elapsedIncreaseSeconds -= secondsPerIncrease;
                     nodeUi.hasUpdate();
                 }
@@ -21,21 +21,17 @@ namespace Node {
             base.updateEmission();
         }
 
-        private void incrementValue() {
-            currentValue = Mathf.Min(maxValue, currentValue + 1);
-        }
-
         public override void onPacket(Packet packet) {
             bool ownerMatches = packet.getOwnerId() == getOwnerId();
             if (ownerMatches) {
-                incrementValue();
+                changeValue(1);
             } else {
                 if (currentValue == 0) {
                     elapsedIncreaseSeconds = 0;
                     nodeComponent.removeAllConnections();
                     setOwnerId(packet.getOwnerId());
                 } else {
-                    currentValue = Mathf.Max(currentValue - 1, 0);
+                    changeValue(-1);
                 }
             }
             nodeUi.hasUpdate();

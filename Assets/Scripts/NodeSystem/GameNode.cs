@@ -77,5 +77,9 @@ namespace Node {
         public bool canReceivePacket() {
             return currentValue < maxValue;
         }
+
+        public virtual void changeValue(int change) {
+            currentValue = Mathf.Max(0, Mathf.Min(maxValue, currentValue + change));
+        }
     }
 }

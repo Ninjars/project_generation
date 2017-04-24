@@ -20,7 +20,7 @@ namespace Node {
                         emissionIndex++;
                         if (sendPacketToNode(connectedNodes[index])) {
                             elapsedEmissionSeconds -= secondsPerEmission;
-                            currentValue--;
+                            changeValue(-1);
                             nodeUi.hasUpdate();
                         }
                     }
