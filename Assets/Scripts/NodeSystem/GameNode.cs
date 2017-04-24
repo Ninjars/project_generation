@@ -73,5 +73,9 @@ namespace Node {
             Debug.Log("GameNode: onSelfInteraction()");
             nodeComponent.removeAllConnections();
         }
+
+        public bool canReceivePacket() {
+            return currentValue < maxValue;
+        }
     }
 }
