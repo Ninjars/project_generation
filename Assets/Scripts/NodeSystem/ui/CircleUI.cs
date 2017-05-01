@@ -35,7 +35,7 @@ namespace Node {
             lineRenderer.material = passiveValueMaterial;
             lineRenderer.startWidth = width;
             lineRenderer.endWidth = width;
-            lineRenderer.numPositions = pointCount+1;
+            lineRenderer.positionCount = pointCount+1;
             lineRenderer.useWorldSpace = false;
             lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             lineRenderer.receiveShadows = false;

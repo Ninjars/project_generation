@@ -26,7 +26,7 @@ namespace Node {
                 GameObject container = new GameObject();
                 container.transform.SetParent(gameObject.transform);
                 LineRenderer connectionRenderer = container.AddComponent<LineRenderer>();
-                connectionRenderer.numPositions = 2;
+                connectionRenderer.positionCount = 2;
                 connectionRenderer.material = lineMaterial;
                 connectionRenderer.startWidth = 0.25f;
                 connectionRenderer.endWidth = 0.25f;

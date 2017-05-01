@@ -20,7 +20,7 @@ public class NodeRangeIndicator : MonoBehaviour {
 
     private void render() {
         LineRenderer lineRenderer = gameObject.GetComponent<LineRenderer>();
-        lineRenderer.numPositions = numSegments + 1;
+        lineRenderer.positionCount = numSegments + 1;
         lineRenderer.useWorldSpace = false;
 
         float deltaTheta = (float) (2.0 * Mathf.PI) / numSegments;
