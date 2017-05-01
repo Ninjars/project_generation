@@ -92,13 +92,11 @@ namespace Node {
                 selectedNode.onSelfInteraction();
             } else {
                 switch (mode) {
-                case InteractionMode.CONNECT:
-                    {
+                case InteractionMode.CONNECT: {
                         connectionInteraction(node);
                         break;
                     }
-                case InteractionMode.MOVE:
-                    {
+                case InteractionMode.MOVE: {
                         moveInteraction(node);
                         break;
                     }
