@@ -4,13 +4,12 @@ using UnityEngine;
 
 namespace Node {
     [RequireComponent(typeof(Node))]
-    [RequireComponent(typeof(NodeUI))]
     public abstract class GameNode : MonoBehaviour {
 
         public int currentValue = 0;
         public bool isActive = true;
         public int maxValue = 10;
-        public int ownerId = -1;
+        public int ownerId = 0;
         public int maxOutboundConnections = -1;
         public bool allowsInboundConnections = true;
 
