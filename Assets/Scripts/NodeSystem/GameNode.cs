@@ -47,6 +47,12 @@ namespace Node {
 
         public abstract void onPacket(Packet packet);
 
+        public abstract void onSlowBeat();
+
+        public abstract void onMediumBeat();
+
+        public abstract void onFastBeat();
+
         public bool hasConnection(GameNode otherNode) {
             return nodeComponent.hasConnection(otherNode.nodeComponent);
         }

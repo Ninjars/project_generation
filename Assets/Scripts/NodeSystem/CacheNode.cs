@@ -1,14 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Node {
     public class CacheNode : GameNodeEmitter {
-
-        void Update() {
-            base.updateEmission();
-        }
-
+        
         public override void onPacket(Packet packet) {
             bool ownerMatches = packet.getOwnerId() == getOwnerId();
             if (ownerMatches) {
@@ -22,6 +19,16 @@ namespace Node {
                 }
             }
             nodeUi.hasUpdate();
+        }
+
+        public override void onSlowBeat() {
+        }
+
+        public override void onMediumBeat() {
+        }
+
+        public override void onFastBeat() {
+            base.onEmit();
         }
     }
 }

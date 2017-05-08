@@ -1,10 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Node {
     public class CaptureNode : GameNodeCompoundValue {
-
 
         public override void onPacket(Packet packet) {
             bool ownerMatches = packet.getOwnerId() == getOwnerId();
@@ -19,6 +19,18 @@ namespace Node {
                 }
             }
             nodeUi.hasUpdate();
+        }
+
+        public override void onSlowBeat() {
+            throw new NotImplementedException();
+        }
+
+        public override void onFastBeat() {
+            throw new NotImplementedException();
+        }
+
+        public override void onMediumBeat() {
+            throw new NotImplementedException();
         }
     }
 }

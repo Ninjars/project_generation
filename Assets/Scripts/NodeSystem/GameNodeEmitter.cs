@@ -4,25 +4,17 @@ using UnityEngine;
 
 namespace Node {
     public abstract class GameNodeEmitter : GameNode {
-        public float secondsPerEmission = 0.5f;
-        private float elapsedEmissionSeconds;
         private int emissionIndex;
 
-        protected virtual void updateEmission() {
+        protected virtual void onEmit() {
             if (currentValue > 0) {
-                elapsedEmissionSeconds += Time.deltaTime;
-                if (elapsedEmissionSeconds >= secondsPerEmission) {
-                    List<Node> connectedNodes = nodeComponent.getConnectedNodes();
-                    if (connectedNodes.Count == 0) {
-                        elapsedEmissionSeconds = secondsPerEmission;
-                    } else {
-                        int index = emissionIndex % connectedNodes.Count;
-                        emissionIndex++;
-                        if (sendPacketToNode(connectedNodes[index])) {
-                            elapsedEmissionSeconds -= secondsPerEmission;
-                            changeValue(-1);
-                            nodeUi.hasUpdate();
-                        }
+                List<Node> connectedNodes = nodeComponent.getConnectedNodes();
+                if (connectedNodes.Count > 0) {
+                    int index = emissionIndex % connectedNodes.Count;
+                    emissionIndex++;
+                    if (sendPacketToNode(connectedNodes[index])) {
+                        changeValue(-1);
+                        nodeUi.hasUpdate();
                     }
                 }
             }
