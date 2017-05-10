@@ -1,37 +1,24 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 
 namespace Node {
-    [RequireComponent(typeof(LineRenderer))]
     public class NodeRangeIndicator : MonoBehaviour {
-        [Range(0.1f, 100f)]
-        public float radius = 1.0f;
 
-        [Range(3, 256)]
-        public int numSegments = 128;
+        public Material material;
+        private GameObject indicatorObject;
+        private float indicatorDepth = 0.001f;
 
         void Start() {
-            render();
+            indicatorObject = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            indicatorObject.transform.parent = gameObject.transform;
+            indicatorObject.transform.position = gameObject.transform.position;
+            indicatorObject.transform.localScale = new Vector3(1, indicatorDepth, 1);
+            indicatorObject.GetComponent<MeshRenderer>().material = material;
         }
 
         public void setRadius(float radius) {
-            this.radius = radius;
-            render();
-        }
-
-        private void render() {
-            LineRenderer lineRenderer = gameObject.GetComponent<LineRenderer>();
-            lineRenderer.positionCount = numSegments + 1;
-            lineRenderer.useWorldSpace = false;
-
-            float deltaTheta = (float) (2.0 * Mathf.PI) / numSegments;
-            float theta = 0f;
-
-            for (int i = 0 ; i < numSegments + 1 ; i++) {
-                float x = radius * Mathf.Cos(theta);
-                float z = radius * Mathf.Sin(theta);
-                Vector3 pos = new Vector3(x, 0, z);
-                lineRenderer.SetPosition(i, pos);
-                theta += deltaTheta;
+            if (indicatorObject != null) {
+                indicatorObject.transform.localScale = new Vector3(radius * 2, indicatorDepth, radius * 2);
             }
         }
     }
