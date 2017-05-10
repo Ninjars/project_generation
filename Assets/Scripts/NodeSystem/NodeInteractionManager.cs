@@ -5,14 +5,8 @@ using UnityEngine;
 namespace Node {
     public class NodeInteractionManager : MonoBehaviour {
 
-        public enum InteractionMode {
-            CONNECT,
-            MOVE
-        }
-
         private GameNode selectedNode = null;
         private Plane baseCollisionPlane;
-        private InteractionMode mode = InteractionMode.CONNECT;
 
         private int activePlayerId = 1;
 
@@ -33,12 +27,6 @@ namespace Node {
             } else if (Input.GetButton("ChoosePlayerNeutral")) {
                 activePlayerId = 0;
             } 
-        }
-
-        public void setInteractionMode(InteractionMode mode) {
-            Debug.Log("NodeInteractionManager: setInteractionMode() " + mode);
-            clearInteraction();
-            this.mode = mode;
         }
 
         private void clearInteraction() {
@@ -91,16 +79,7 @@ namespace Node {
             if (node.Equals(selectedNode)) {
                 selectedNode.onSelfInteraction();
             } else {
-                switch (mode) {
-                case InteractionMode.CONNECT: {
-                        connectionInteraction(node);
-                        break;
-                    }
-                case InteractionMode.MOVE: {
-                        moveInteraction(node);
-                        break;
-                    }
-                }
+                connectionInteraction(node);
             }
             clearInteraction();
         }
@@ -118,15 +97,6 @@ namespace Node {
                 if (selectedNode.isOwnedBySamePlayer(node)) {
                     node.removeConnection(selectedNode);
                 }
-            }
-        }
-
-        private void moveInteraction(GameNode node) {
-            Debug.Log("NodeInteractionManager: moveInteraction()");
-            if (selectedNode.hasConnection(node)) {
-                Debug.Log("NodeInteractionManager: moving " + selectedNode + " to " + node);
-            } else {
-                Debug.Log("NodeInteractionManager: invalid move; no connection from " + selectedNode + " to " + node);
             }
         }
     }
