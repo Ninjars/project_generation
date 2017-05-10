@@ -1,10 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Node {
     public class NodeInteractionManager : MonoBehaviour {
 
+        public GameObject rangeIndicatorObject;
+
+        private NodeRangeIndicator rangeIndicatorScript;
+        private GameObject rangeIndicatorInstance;
         private GameNode selectedNode = null;
         private Plane baseCollisionPlane;
 
@@ -20,6 +22,11 @@ namespace Node {
                 checkForNodeInteraction(ray);
             }
 
+            if (rangeIndicatorInstance != null && rangeIndicatorInstance.activeSelf) {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                updateRangeIndicator(ray);
+            }
+
             if (Input.GetButton("ChoosePlayer1")) {
                 activePlayerId = 1;
             } else if (Input.GetButton("ChoosePlayer2")) {
@@ -32,6 +39,7 @@ namespace Node {
         private void clearInteraction() {
             Debug.Log("NodeInteractionManager: clearInteraction()");
             selectedNode = null;
+            hideRangeIndicator();
         }
 
         private bool checkForNodeInteraction(Ray ray) {
@@ -71,6 +79,7 @@ namespace Node {
             Debug.Log("NodeInteractionManager: beginInteraction()");
             selectedNode = node;
             node.setOwnerId(activePlayerId);
+            showRangeIndicator(node.getPosition());
         }
 
         private void endInteraction(GameNode node) {
@@ -101,6 +110,37 @@ namespace Node {
                 if (selectedNode.isOwnedBySamePlayer(node)) {
                     node.removeConnection(selectedNode);
                 }
+            }
+        }
+
+        private void showRangeIndicator(Vector3 position) {
+            if (rangeIndicatorInstance == null) {
+                rangeIndicatorInstance = GameObject.Instantiate(rangeIndicatorObject);
+                rangeIndicatorScript = rangeIndicatorInstance.GetComponent<NodeRangeIndicator>();
+            } else {
+                rangeIndicatorInstance.SetActive(true);
+            }
+            rangeIndicatorInstance.transform.position = position;
+        }
+
+        private void hideRangeIndicator() {
+            if (rangeIndicatorInstance != null) {
+                rangeIndicatorInstance.SetActive(false);
+            }
+        }
+
+        private void updateRangeIndicator(Ray ray) {
+            if (rangeIndicatorScript == null || rangeIndicatorInstance == null) {
+                return;
+            }
+            float distanceToBaseCollision;
+            if (baseCollisionPlane.Raycast(ray, out distanceToBaseCollision)) {
+                Vector3 hitPoint = ray.GetPoint(distanceToBaseCollision);
+                Vector3 indicatorPosition = rangeIndicatorInstance.transform.position;
+                float distanceBetween = Vector3.Distance(
+                    new Vector3(hitPoint.x, 0, hitPoint.z), 
+                    new Vector3(indicatorPosition.x, 0, indicatorPosition.z));
+                rangeIndicatorScript.setRadius(Mathf.Min(distanceBetween, GameManager.nodeConnectionRange));
             }
         }
     }
