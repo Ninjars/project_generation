@@ -86,7 +86,11 @@ namespace Node {
 
         private void connectionInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: connectionInteraction()");
-            if (!node.allowsInboundConnections) {
+            // limit node connection range
+            float distanceBetweenNodes = Vector3.Distance(node.getPosition(), selectedNode.getPosition());
+            if (distanceBetweenNodes > GameManager.nodeConnectionRange) {
+                Debug.Log("NodeInteractionManager: distance too far " + distanceBetweenNodes);
+            } else if (!node.allowsInboundConnections) {
                 Debug.Log("NodeInteractionManager: not allowed to connect to " + node);
             } else if (selectedNode.hasConnection(node)) {
                 Debug.Log("NodeInteractionManager: removing connection " + selectedNode + ", " + node);

@@ -3,6 +3,8 @@
 namespace Node {
     public class GameManager : MonoBehaviour {
 
+        public static float nodeConnectionRange = 10f;
+
         public float slowBeatSeconds = 4f;
         public float mediumBeatSeconds = 2f;
         public float fastBeatSeconds = 1f;
