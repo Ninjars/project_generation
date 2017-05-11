@@ -22,6 +22,7 @@ namespace Node {
                 if (currentValue == 0) {
                     nodeComponent.removeAllConnections();
                     setOwnerId(packet.getOwnerId());
+                    isActive = true;
                 } else {
                     changeValue(-1);
                 }
@@ -30,7 +31,7 @@ namespace Node {
         }
 
         public override void onSlowBeat() {
-            if (currentLocks <= 0) {
+            if (isActive && currentLocks <= 0) {
                 changeValue(1);
                 nodeUi.hasUpdate();
             }
