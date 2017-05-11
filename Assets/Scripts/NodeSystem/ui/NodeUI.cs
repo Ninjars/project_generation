@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Node {
     [RequireComponent(typeof(GameNode))]
@@ -21,6 +19,7 @@ namespace Node {
             uiRoot.transform.SetParent(gameObject.transform);
             uiRoot.transform.position = gameObject.transform.position;
             uiRoot.name = "uiRoot";
+            uiRoot.transform.Rotate(Vector3.right, 90);
             init();
         }
 

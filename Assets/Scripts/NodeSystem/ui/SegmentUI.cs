@@ -16,7 +16,6 @@ namespace Node {
         }
 
         public override void updateRenderer() {
-            uiRoot.transform.LookAt(Camera.main.transform);
             if (!shouldUpdate) {
                 return;
             }
