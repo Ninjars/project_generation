@@ -11,6 +11,9 @@ namespace Node {
         [Range(0f, 1f)]
         [Tooltip("% above which emitter will emit at medium speed")]
         public float mediumThreshold = 0.33f;
+        [Range(0f, 1f)]
+        [Tooltip("% below which nothing will be emitted")]
+        public float reserveThreshold = 0.2f;
 
         public override void onPacket(Packet packet) {
             bool ownerMatches = packet.getOwnerId() == getOwnerId();
@@ -38,7 +41,8 @@ namespace Node {
         }
 
         private bool isEmittingSlow() {
-            return currentValue / (float)maxValue < mediumThreshold;
+            float currentWeight = currentValue / (float)maxValue;
+            return currentWeight < mediumThreshold && currentWeight > reserveThreshold;
         }
 
         public override void onMediumBeat() {
