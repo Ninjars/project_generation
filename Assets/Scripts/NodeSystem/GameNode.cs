@@ -18,9 +18,12 @@ namespace Node {
         protected NodeUI nodeUi;
         protected Node nodeComponent;
 
+        private Globals globals;
+
         private void Awake() {
             nodeUi = GetComponent<NodeUI>();
             nodeComponent = GetComponent<Node>();
+            globals = FindObjectOfType<Globals>();
         }
 
         void Start() {
@@ -29,8 +32,7 @@ namespace Node {
 
         public void setOwnerId(int activePlayerId) {
             ownerId = activePlayerId;
-            gameObject.GetComponentInChildren<MeshRenderer>().material = 
-                GameObject.FindWithTag("GameController").GetComponent<Globals>().playerMaterials[activePlayerId];
+            gameObject.GetComponentInChildren<MeshRenderer>().material = globals.playerMaterials[activePlayerId];
             if (ownerId != 0) {
                 isActive = true;
             }
