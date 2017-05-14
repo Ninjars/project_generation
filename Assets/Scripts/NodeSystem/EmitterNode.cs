@@ -35,6 +35,9 @@ namespace Node {
                 changeValue(1);
                 nodeUi.hasUpdate();
             }
+            if (isEmittingSlow()) {
+                base.onEmit();
+            }
         }
 
         private bool isEmittingSlow() {
