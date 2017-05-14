@@ -2,6 +2,7 @@
 
 namespace Node {
     public class GameManager : MonoBehaviour {
+        internal static readonly int NEUTRAL_PLAYER_ID = 0;
 
         public static float nodeConnectionRange = 10f;
 

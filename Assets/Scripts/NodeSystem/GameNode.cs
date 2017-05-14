@@ -51,7 +51,7 @@ namespace Node {
             ownerId = activePlayerId;
             gameObject.GetComponentInChildren<MeshRenderer>().material = globals.playerMaterials[activePlayerId];
             gameManager.onGameNodeOwnerChange(this);
-            isActive = ownerId != 0;
+            isActive = ownerId != GameManager.NEUTRAL_PLAYER_ID;
         }
 
         public bool isOwnedBySamePlayer(GameNode otherNode) {
