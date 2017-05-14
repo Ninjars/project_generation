@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Node {
@@ -18,12 +17,30 @@ namespace Node {
         protected NodeUI nodeUi;
         protected Node nodeComponent;
 
+        private GameManager gameManager;
         private Globals globals;
+        private List<GameNode> gameNodesInRange;
 
         private void Awake() {
             nodeUi = GetComponent<NodeUI>();
             nodeComponent = GetComponent<Node>();
+            gameManager = FindObjectOfType<GameManager>();
             globals = FindObjectOfType<Globals>();
+            gameNodesInRange = createGameNodesInRangeList();
+        }
+
+        private List<GameNode> createGameNodesInRangeList() {
+            float maxRange = GameManager.nodeConnectionRange;
+            int mask = 1 << LayerMask.NameToLayer("nodes");
+            Collider[] colliders = Physics.OverlapSphere(getPosition(), maxRange, mask);
+            List<GameNode> nodes = new List<GameNode>();
+            foreach (Collider collider in colliders) {
+                GameNode node = collider.transform.gameObject.GetComponentInParent<GameNode>();
+                if (node != null && node != this) {
+                    nodes.Add(node);
+                }
+            }
+            return nodes;
         }
 
         void Start() {
@@ -33,9 +50,8 @@ namespace Node {
         public void setOwnerId(int activePlayerId) {
             ownerId = activePlayerId;
             gameObject.GetComponentInChildren<MeshRenderer>().material = globals.playerMaterials[activePlayerId];
-            if (ownerId != 0) {
-                isActive = true;
-            }
+            gameManager.onGameNodeOwnerChange(this);
+            isActive = ownerId != 0;
         }
 
         public bool isOwnedBySamePlayer(GameNode otherNode) {
@@ -80,7 +96,6 @@ namespace Node {
         }
 
         public void onSelfInteraction() {
-            Debug.Log("GameNode: onSelfInteraction()");
             nodeComponent.removeAllConnections();
         }
 
@@ -90,6 +105,10 @@ namespace Node {
 
         public virtual void changeValue(int change) {
             currentValue = Mathf.Max(0, Mathf.Min(maxValue, currentValue + change));
+        }
+
+        public List<GameNode> getGameNodesInRange() {
+            return gameNodesInRange;
         }
     }
 }
