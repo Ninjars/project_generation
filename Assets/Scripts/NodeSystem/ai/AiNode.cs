@@ -26,7 +26,6 @@ namespace Node {
 
         private GameNode findBestGameNodeToTarget(GameNode queryNode) {
             List<GameNode> nodesInRange = queryNode.getGameNodesInRange();
-            Debug.Log("Node " + node.name + " in range: " + nodesInRange.Count);
             // find closest unowned node with lowest value as initial target
             GameNode bestTarget = null;
             float bestWeighting = -1;
@@ -68,8 +67,6 @@ namespace Node {
             }
             bool isNeutral = targetNode.ownerId == GameManager.NEUTRAL_PLAYER_ID;
             float ownershipModifier = isFriendly ? -1 : isNeutral ? 1 : 0;
-            Debug.Log("SimpleAi normalisedRange sanity check: " + normalisedRange);
-            Debug.Log("SimpleAi captureRatio sanity check: " + captureRatio);
             return normalisedRange + captureRatio + ownershipModifier;
         }
     }

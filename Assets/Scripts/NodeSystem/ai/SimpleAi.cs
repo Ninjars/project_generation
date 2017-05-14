@@ -25,7 +25,6 @@ namespace Node {
             foreach (AiNode node in ownedNodes) {
                 GameNode connectionTarget = node.getBestConnection();
                 if (connectionTarget != null) {
-                    Debug.Log("Ai" + playerId + " updateNodeConnections: making new connection");
                     node.node.addConnection(connectionTarget);
                 }
             }
@@ -33,7 +32,6 @@ namespace Node {
 
         private void updateOwnedNodes() {
             List<GameNode> nodes = gameManager.getGameNodesForPlayer(playerId);
-            Debug.Log("Ai" + playerId + " updateOwnedNodes " + nodes.Count);
             ownedNodes = new List<AiNode>();
             foreach (GameNode node in nodes) {
                 ownedNodes.Add(new AiNode(node));
