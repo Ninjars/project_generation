@@ -12,8 +12,6 @@ namespace Node {
         [Tooltip("% above which emitter will emit at medium speed")]
         public float mediumThreshold = 0.33f;
 
-        private int currentLocks = 0;
-
         public override void onPacket(Packet packet) {
             bool ownerMatches = packet.getOwnerId() == getOwnerId();
             if (ownerMatches) {
@@ -30,7 +28,7 @@ namespace Node {
         }
 
         public override void onSlowBeat() {
-            if (isActive && currentLocks <= 0) {
+            if (isActive) {
                 changeValue(1);
                 nodeUi.hasUpdate();
             }
@@ -44,9 +42,6 @@ namespace Node {
         }
 
         public override void onMediumBeat() {
-            if (currentLocks > 0) {
-                currentLocks--;
-            }
             if (isEmittingMedium()) {
                 base.onEmit();
             }
