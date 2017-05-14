@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Node {
     public class GameManager : MonoBehaviour {
+        internal static readonly int NEUTRAL_PLAYER_ID = 0;
 
         public static float nodeConnectionRange = 10f;
 
@@ -10,14 +13,16 @@ namespace Node {
         public float fastBeatSeconds = 1f;
 
         private GameNode[] gameNodes;
+        private BaseAi[] aiPlayers;
 
         private float elapsedSlow = 0;
         private float elapsedMedium = 0;
         private float elapsedFast = 0;
 
         // Use this for initialization
-        void Start() {
+        void Awake() {
             gameNodes = FindObjectsOfType<GameNode>();
+            aiPlayers = FindObjectsOfType<BaseAi>();
         }
 
         // Update is called once per frame
@@ -33,10 +38,17 @@ namespace Node {
             if (elapsedMedium >= mediumBeatSeconds) {
                 updateGameNodesMediumBeat();
                 elapsedMedium -= mediumBeatSeconds;
+                aiDecisionTick();
             }
             if (elapsedFast >= fastBeatSeconds) {
                 updateGameNodesFastBeat();
                 elapsedFast -= fastBeatSeconds;
+            }
+        }
+
+        private void aiDecisionTick() {
+            foreach (BaseAi ai in aiPlayers) {
+                ai.onDecisionTick();
             }
         }
 
@@ -56,6 +68,25 @@ namespace Node {
             foreach (GameNode node in gameNodes) {
                 node.onFastBeat();
             }
+        }
+
+        public void onGameNodeOwnerChange(GameNode node) {
+            if (aiPlayers == null) {
+                return;
+            }
+            foreach (BaseAi ai in aiPlayers) {
+                ai.onGameNodeOwnerChange(node);
+            }
+        }
+
+        public List<GameNode> getGameNodesForPlayer(int playerId) {
+            List<GameNode> playerNodes = new List<GameNode>();
+            foreach (GameNode node in gameNodes) {
+                if (node.ownerId == playerId) {
+                    playerNodes.Add(node);
+                }
+            }
+            return playerNodes;
         }
     }
 }
