@@ -77,9 +77,10 @@ namespace Node {
 
         private void beginInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: beginInteraction()");
-            selectedNode = node;
-            node.setOwnerId(activePlayerId);
-            showRangeIndicator(node.getPosition());
+            if (node.ownerId == activePlayerId) {
+                selectedNode = node;
+                showRangeIndicator(node.getPosition());
+            }
         }
 
         private void endInteraction(GameNode node) {
