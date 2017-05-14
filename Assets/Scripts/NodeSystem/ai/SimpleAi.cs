@@ -7,7 +7,7 @@ namespace Node {
     public class SimpleAi : BaseAi {
         public int playerId;
 
-        private List<AiNode> ownedNodes;
+        private List<AiNode> ownedNodes = new List<AiNode>();
 
         private bool targetsInRange;
 
@@ -24,7 +24,7 @@ namespace Node {
         private void updateNodeConnections() {
             foreach (AiNode node in ownedNodes) {
                 GameNode connectionTarget = node.getBestConnection();
-                if (connectionTarget != null) {
+                if (connectionTarget != null && !node.node.hasConnection(connectionTarget)) {
                     node.node.addConnection(connectionTarget);
                 }
             }
@@ -32,7 +32,7 @@ namespace Node {
 
         private void updateOwnedNodes() {
             List<GameNode> nodes = gameManager.getGameNodesForPlayer(playerId);
-            ownedNodes = new List<AiNode>();
+            ownedNodes.Clear();
             foreach (GameNode node in nodes) {
                 ownedNodes.Add(new AiNode(node));
             }
