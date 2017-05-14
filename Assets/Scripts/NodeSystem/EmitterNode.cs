@@ -22,7 +22,6 @@ namespace Node {
                 if (currentValue == 0) {
                     nodeComponent.removeAllConnections();
                     setOwnerId(packet.getOwnerId());
-                    isActive = true;
                 } else {
                     changeValue(-1);
                 }

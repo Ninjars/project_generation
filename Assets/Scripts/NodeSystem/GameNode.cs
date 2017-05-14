@@ -31,6 +31,9 @@ namespace Node {
             ownerId = activePlayerId;
             gameObject.GetComponentInChildren<MeshRenderer>().material = 
                 GameObject.FindWithTag("GameController").GetComponent<Globals>().playerMaterials[activePlayerId];
+            if (ownerId != 0) {
+                isActive = true;
+            }
         }
 
         public bool isOwnedBySamePlayer(GameNode otherNode) {
