@@ -31,7 +31,7 @@ namespace Node {
         }
 
         public override void onSlowBeat() {
-            if (isActive) {
+            if (!isNeutral()) {
                 changeValue(1);
                 nodeUi.hasUpdate();
             }

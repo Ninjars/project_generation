@@ -6,7 +6,6 @@ namespace Node {
     public abstract class GameNode : MonoBehaviour {
 
         public int currentValue = 0;
-        public bool isActive = true;
         public int maxValue = 10;
         public int ownerId = 0;
         public int maxOutboundConnections = -1;
@@ -51,7 +50,6 @@ namespace Node {
             ownerId = activePlayerId;
             gameObject.GetComponentInChildren<MeshRenderer>().material = globals.playerMaterials[activePlayerId];
             gameManager.onGameNodeOwnerChange(this);
-            isActive = ownerId != GameManager.NEUTRAL_PLAYER_ID;
         }
 
         public bool isOwnedBySamePlayer(GameNode otherNode) {
@@ -60,6 +58,10 @@ namespace Node {
 
         protected int getOwnerId() {
             return ownerId;
+        }
+
+        protected bool isNeutral() {
+            return ownerId == GameManager.NEUTRAL_PLAYER_ID;
         }
 
         public Vector3 getPosition() {
