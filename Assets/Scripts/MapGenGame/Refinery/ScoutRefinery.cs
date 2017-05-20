@@ -23,7 +23,7 @@ namespace MapGenGame {
         private Vector3 spawnLocation;
 
         private void Start() {
-            spawnLocation = transform.FindChild("SpawnLocation").position;
+            spawnLocation = transform.Find("SpawnLocation").position;
             stockpile = stockpileObj.GetComponent<IStockpile>();
             if (stockpile == null) {
                 throw new Exception("no stockpile component attached to ScoutRefinery");

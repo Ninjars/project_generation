@@ -13,7 +13,7 @@ namespace MapGenGame {
         private GameObject lastSpawnedInstance;
 
     	void Start () {
-            spawnLocation = transform.FindChild("SpawnLocation").position;
+            spawnLocation = transform.Find("SpawnLocation").position;
             beginSpawning();
     	}
 
