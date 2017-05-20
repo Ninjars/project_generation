@@ -5,9 +5,9 @@ namespace Node {
     [RequireComponent(typeof(Node))]
     public abstract class GameNode : MonoBehaviour {
 
-        public int intialValue = 0;
+        public int initialValue = 0;
         public int maxValue = 10;
-        public int intialOwnerId = 0;
+        public int initialOwnerId = 0;
         public int maxOutboundConnections = -1;
         public bool allowsInboundConnections = true;
 
@@ -27,7 +27,11 @@ namespace Node {
             gameManager = FindObjectOfType<GameManager>();
             globals = FindObjectOfType<Globals>();
             gameNodesInRange = createGameNodesInRangeList();
-            currentValue = new NodeValue(intialOwnerId, maxValue, intialValue, newOwnerId => onOwnerChange(newOwnerId));
+            currentValue = new NodeValue(initialOwnerId, maxValue, initialValue, newOwnerId => onOwnerChange(newOwnerId));
+        }
+
+        private void Start() {
+            onOwnerChange(initialOwnerId);
         }
 
         private List<GameNode> createGameNodesInRangeList() {
@@ -45,8 +49,8 @@ namespace Node {
         }
 
         private void onOwnerChange(int ownerId) {
-            currentValue.setOwner(ownerId);
-            gameObject.GetComponentInChildren<MeshRenderer>().material = globals.playerMaterials[currentValue.getOwnerId()];
+            Debug.Log("onOwnerChange: " + gameObject.name + " to player " + ownerId);
+            gameObject.GetComponentInChildren<MeshRenderer>().material = globals.playerMaterials[ownerId];
             gameManager.onGameNodeOwnerChange(this);
             nodeComponent.removeAllConnections();
         }
@@ -68,7 +72,6 @@ namespace Node {
         }
 
         public void onPacket(Packet packet) {
-            Debug.Log("onPacket");
             changeValue(packet.getOwnerId(), 1);
             nodeUi.hasUpdate();
         }

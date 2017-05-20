@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace Node {
     public class NodeValue {
 
         private Dictionary<int, int> playerStakes = new Dictionary<int, int>();
-        private readonly int neutralValue;
+        private int neutralValue;
         private int maxValue;
         private int owningPlayer = GameManager.NEUTRAL_PLAYER_ID;
         private Action<int> onOwnerChangeCallback;
@@ -24,25 +23,24 @@ namespace Node {
             } else {
                 neutralValue = 0;
             }
+            owningPlayer = player;
             this.onOwnerChangeCallback = onOwnerChangeCallback;
-            setOwningPlayer(player);
         }
 
         private void setOwningPlayer(int player) {
+            if (player != GameManager.NEUTRAL_PLAYER_ID) {
+                // once captured, remove the neutral value buffer
+                neutralValue = 0;
+            }
             owningPlayer = player;
             onOwnerChangeCallback(player);
         }
 
         public void changePlayerValue(int player, int value) {
-            Debug.Log("changePlayerValue " + player + " by " + value + " owned? " + isOwned());
             if (isOwned()) {
                 // update owning player value accordingly, possibly removing ownership if stake falls below 1
                 if (player == owningPlayer) {
-                    if (isUncontested()) {
-                        updateOwnerValue(value);
-                    } else {
-                        purgeOtherPlayersRecursively(owningPlayer, value);
-                    }
+                    updateOwnerValue(value);
                 } else {
                     updateOwnerValue(-value);
                 }
@@ -55,30 +53,26 @@ namespace Node {
 
                 int playerValue;
                 playerStakes.TryGetValue(player, out playerValue);
-                Debug.Log(">> currentForPlayer " + player + " : " + playerValue);
                 playerValue += value;
-                Debug.Log(">> changing to " + playerValue);
 
                 if (playerValue <= 0) {
-                    Debug.Log(">> removing");
                     playerStakes.Remove(player);
                 } else {
                     playerStakes[player] = playerValue;
                 }
 
                 int totalValue = getTotalValue();
-                if (totalValue > maxValue) {
-                    purgeOtherPlayersRecursively(player, totalValue - maxValue);
+                if (totalValue > neutralValue && ! isUncontested()) {
+                    purgeOtherPlayersRecursively(player, totalValue - neutralValue);
                 }
-
-                checkForOwnerChange();
             }
+            checkForOwnerChange();
         }
 
         private void checkForOwnerChange() {
             bool isOwned = isUncontested() && playerStakes.Values.DefaultIfEmpty(-1).First() >= neutralValue;
             if (isOwned) {
-                int owningId = playerStakes.Keys.DefaultIfEmpty(-1).First();
+                int owningId = playerStakes.Keys.DefaultIfEmpty(0).First();
                 bool ownerChange = owningId != getOwnerId();
                 if (ownerChange) {
                     setOwningPlayer(owningId);
@@ -97,24 +91,24 @@ namespace Node {
             } else {
                 playerStakes[owningPlayer] = stake;
             }
-            Debug.Log("updateOwnerValue " + valueChange + " did change owner? " + ownerChange);
             return ownerChange;
         }
 
         private void purgeOtherPlayersRecursively(int player, int valueToPurge) {
+            if (isUncontested()) {
+                return;
+            }
             int remainingToPurge = valueToPurge;
             int targetPlayer = getLowestValuePlayer(player);
-            Debug.Log("purgeOtherPlayersRecursively preserve " + player + " target " + targetPlayer + "purge by " + valueToPurge);
             int playerValue;
-            playerStakes.TryGetValue(player, out playerValue);
+            playerStakes.TryGetValue(targetPlayer, out playerValue);
             playerValue -= remainingToPurge;
             if (playerValue <= 0) {
-                playerStakes.Remove(player);
+                playerStakes.Remove(targetPlayer);
                 int remaining = remainingToPurge - playerValue;
-                Debug.Log(">> removing; remaining value to purge: " + remaining);
-                changePlayerValue(player, remaining);
+                purgeOtherPlayersRecursively(player, remaining);
             } else {
-                playerStakes[player] = playerValue;
+                playerStakes[targetPlayer] = playerValue;
             }
         }
 
@@ -159,7 +153,6 @@ namespace Node {
         }
 
         public bool isUncontested() {
-            Debug.Log("isUncontested? " + playerStakes.Count);
             return playerStakes.Count < 2;
         }
 
