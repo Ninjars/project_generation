@@ -9,14 +9,14 @@ namespace Node {
         public int currentSubValue = 0;
         public int maxSubValue = 5;
 
-        public override void changeValue(int change) {
+        public override void changeValue(int playerId, int change) {
             int subValue = currentSubValue + change;
             currentSubValue = subValue % maxSubValue;
-            base.changeValue((int)Mathf.Floor(subValue / maxSubValue));
+            base.changeValue(playerId, (int)Mathf.Floor(subValue / maxSubValue));
         }
 
         public int getRawValue() {
-            return currentValue * maxSubValue + currentSubValue;
+            return getOwnerValue() * maxSubValue + currentSubValue;
         }
     }
 }

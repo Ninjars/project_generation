@@ -82,7 +82,7 @@ namespace Node {
         public List<GameNode> getGameNodesForPlayer(int playerId) {
             List<GameNode> playerNodes = new List<GameNode>();
             foreach (GameNode node in gameNodes) {
-                if (node.ownerId == playerId) {
+                if (node.getOwnerId() == playerId) {
                     playerNodes.Add(node);
                 }
             }

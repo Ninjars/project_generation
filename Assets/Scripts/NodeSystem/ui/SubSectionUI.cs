@@ -30,8 +30,8 @@ namespace Node {
             }
             for (int i = 0; i < segmentRenderers.Count; i++) {
                 Section section = segmentRenderers[i];
-                bool isComplete = i < gameNode.currentValue;
-                bool isActive = isComplete || (i == gameNode.currentValue && gameNodeSubValue.currentSubValue > 0);
+                bool isComplete = i < gameNode.getOwnerValue();
+                bool isActive = isComplete || (i == gameNode.getOwnerValue() && gameNodeSubValue.currentSubValue > 0);
                 Material sectionMaterial;
                 if (isComplete) {
                     sectionMaterial = activeValueMaterial;

@@ -61,7 +61,7 @@ namespace Node {
             }
             for (int i = 0; i < lines.Count; i++) {
                 Material material;
-                if (i < gameNode.currentValue) {
+                if (i < gameNode.getOwnerValue()) {
                     material = activeValueMaterial;
                 } else {
                     material = passiveValueMaterial;

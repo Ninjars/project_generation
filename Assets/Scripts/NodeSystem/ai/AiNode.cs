@@ -10,7 +10,7 @@ namespace Node {
         public AiNode(GameNode node) {
             this.node = node;
             foreach (GameNode target in node.getGameNodesInRange()) {
-                if (target.ownerId != node.ownerId) {
+                if (target.getOwnerId() != node.getOwnerId()) {
                     targets.Add(target);
                 }
             }
@@ -55,15 +55,15 @@ namespace Node {
          * avoid hostile nodes that have greater current value than this node
          */
         private float getWeightingForNodeTarget(GameNode queryNode, GameNode targetNode) {
-            bool isFriendly = queryNode.ownerId == targetNode.ownerId;
+            bool isFriendly = queryNode.getOwnerId() == targetNode.getOwnerId();
             if (isFriendly && targetNode.hasConnection(queryNode)) {
                 return -0.5f;
             }
-            if (isFriendly && targetNode.currentValue == targetNode.maxValue) {
+            if (isFriendly && targetNode.getOwnerValue() == targetNode.maxValue) {
                 return -0.5f;
             }
-            bool isNeutral = targetNode.ownerId == GameManager.NEUTRAL_PLAYER_ID;
-            if (!isNeutral && !isFriendly && targetNode.currentValue > queryNode.currentValue) {
+            bool isNeutral = targetNode.getOwnerId() == GameManager.NEUTRAL_PLAYER_ID;
+            if (!isNeutral && !isFriendly && targetNode.getOwnerValue() > queryNode.getOwnerValue()) {
                 return 0;
             }
 
@@ -72,7 +72,7 @@ namespace Node {
                 distanceFactor = 1f - distanceFactor;
             }
 
-            float weaknessFactor = Mathf.Min(1, Mathf.Max(0, 1f - (targetNode.currentValue / (float) targetNode.maxValue)));
+            float weaknessFactor = Mathf.Min(1, Mathf.Max(0, 1f - (targetNode.getOwnerValue() / (float) targetNode.maxValue)));
 
             float alignmentFactor = isFriendly ? 0 : isNeutral ? 1 : 0.5f;
             float val = 0.15f * distanceFactor +  0.5f * weaknessFactor + 0.35f * alignmentFactor;

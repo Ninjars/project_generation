@@ -21,7 +21,7 @@ namespace Node {
             }
             for (int i = 0; i < segmentRenderers.Count; i++) {
                 Material segmentMaterial;
-                if (i < gameNode.currentValue) {
+                if (i < gameNode.getOwnerValue()) {
                     segmentMaterial = activeValueMaterial;
                 } else {
                     segmentMaterial = passiveValueMaterial;

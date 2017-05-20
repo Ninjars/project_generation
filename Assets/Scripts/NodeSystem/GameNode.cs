@@ -5,9 +5,9 @@ namespace Node {
     [RequireComponent(typeof(Node))]
     public abstract class GameNode : MonoBehaviour {
 
-        public int currentValue = 0;
+        public int intialValue = 0;
         public int maxValue = 10;
-        public int ownerId = 0;
+        public int intialOwnerId = 0;
         public int maxOutboundConnections = -1;
         public bool allowsInboundConnections = true;
 
@@ -19,6 +19,7 @@ namespace Node {
         private GameManager gameManager;
         private Globals globals;
         private List<GameNode> gameNodesInRange;
+        private NodeValue currentValue;
 
         private void Awake() {
             nodeUi = GetComponent<NodeUI>();
@@ -26,6 +27,7 @@ namespace Node {
             gameManager = FindObjectOfType<GameManager>();
             globals = FindObjectOfType<Globals>();
             gameNodesInRange = createGameNodesInRangeList();
+            currentValue = new NodeValue(intialOwnerId, maxValue, intialValue, newOwnerId => onOwnerChange(newOwnerId));
         }
 
         private List<GameNode> createGameNodesInRangeList() {
@@ -42,33 +44,34 @@ namespace Node {
             return nodes;
         }
 
-        void Start() {
-            setOwnerId(ownerId);
-        }
-
-        public void setOwnerId(int activePlayerId) {
-            ownerId = activePlayerId;
-            gameObject.GetComponentInChildren<MeshRenderer>().material = globals.playerMaterials[activePlayerId];
+        private void onOwnerChange(int ownerId) {
+            currentValue.setOwner(ownerId);
+            gameObject.GetComponentInChildren<MeshRenderer>().material = globals.playerMaterials[currentValue.getOwnerId()];
             gameManager.onGameNodeOwnerChange(this);
+            nodeComponent.removeAllConnections();
         }
 
         public bool isOwnedBySamePlayer(GameNode otherNode) {
-            return otherNode.ownerId == ownerId;
+            return otherNode.getOwnerId() == getOwnerId();
         }
 
-        protected int getOwnerId() {
-            return ownerId;
+        public int getOwnerId() {
+            return currentValue.getOwnerId();
         }
 
         protected bool isNeutral() {
-            return ownerId == GameManager.NEUTRAL_PLAYER_ID;
+            return getOwnerId() == GameManager.NEUTRAL_PLAYER_ID;
         }
 
         public Vector3 getPosition() {
             return gameObject.transform.position;
         }
 
-        public abstract void onPacket(Packet packet);
+        public void onPacket(Packet packet) {
+            Debug.Log("onPacket");
+            changeValue(packet.getOwnerId(), 1);
+            nodeUi.hasUpdate();
+        }
 
         public abstract void onSlowBeat();
 
@@ -102,15 +105,19 @@ namespace Node {
         }
 
         public bool canReceivePacket() {
-            return currentValue < maxValue;
+            return currentValue.getValueForPlayer(getOwnerId()) < maxValue;
         }
 
-        public virtual void changeValue(int change) {
-            currentValue = Mathf.Max(0, Mathf.Min(maxValue, currentValue + change));
+        public virtual void changeValue(int playerId, int change) {
+            currentValue.changePlayerValue(playerId, change);
         }
 
         public List<GameNode> getGameNodesInRange() {
             return gameNodesInRange;
+        }
+
+        public int getOwnerValue() {
+            return currentValue.getValueForPlayer(getOwnerId());
         }
     }
 }
