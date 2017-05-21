@@ -18,12 +18,10 @@ namespace Node {
         private NodeViewModel viewModel;
 
         private GameObject uiRoot;
-        private GameNode gameNode;
         private List<MeshRenderer> segmentRenderers;
 
         void Awake() {
             globals = FindObjectOfType<Globals>();
-            gameNode = GetComponent<GameNode>();
             uiRoot = new GameObject();
             uiRoot.transform.SetParent(gameObject.transform);
             uiRoot.transform.position = gameObject.transform.position;
@@ -51,14 +49,17 @@ namespace Node {
             if (segmentRenderers == null || segmentRenderers.Count != viewModel.maxValue) {
                 segmentRenderers = createSegments(radius, width, viewModel.maxValue);
             }
-            for (int i = 0; i < segmentRenderers.Count; i++) {
-                Material segmentMaterial;
-                if (i < gameNode.getOwnerValue()) {
-                    segmentMaterial = activeValueMaterial;
-                } else {
-                    segmentMaterial = globals.passiveValueMaterial;
+            int i = 0;
+            foreach (PlayerMaterialViewModel model in viewModel.valueModel) {
+                Material segmentMaterial = model.material;
+                for (int j = i; j < i + model.count; j++) {
+                    segmentRenderers[j].GetComponent<MeshRenderer>().material = segmentMaterial;
                 }
-                segmentRenderers[i].GetComponent<MeshRenderer>().material = segmentMaterial;
+                i += model.count;
+            }
+            Material passiveMaterial = globals.passiveValueMaterial;
+            for (int j = i; j < segmentRenderers.Count; j++) {
+                segmentRenderers[j].GetComponent<MeshRenderer>().material = passiveMaterial;
             }
             shouldUpdate = false;
         }
