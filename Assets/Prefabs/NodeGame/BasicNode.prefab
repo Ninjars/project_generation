@@ -133,7 +133,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1449208907186282}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3784469f8101eac45a54270f3bb81bdf, type: 3}
+  m_Script: {fileID: 11500000, guid: f6f8e945566d94b5a832490e75f36e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   initialValue: 0
@@ -142,7 +142,13 @@ MonoBehaviour:
   maxOutboundConnections: 1
   allowsInboundConnections: 1
   packet: {fileID: 1893740232287916, guid: 45b3c3f72cc664bc69adfd72af73ae5e, type: 2}
+  nodeUi: {fileID: 0}
+  nodeComponent: {fileID: 0}
+  gameManager: {fileID: 0}
+  globals: {fileID: 0}
+  gameNodesInRange: []
   reserveThreshold: 0.2
+  emissionIndex: 0
 --- !u!114 &114463331650900448
 MonoBehaviour:
   m_ObjectHideFlags: 1
