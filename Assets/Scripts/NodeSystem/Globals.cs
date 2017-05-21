@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Node {
     public class Globals : MonoBehaviour {
+        public Material passiveValueMaterial;
         public List<Material> playerMaterials;
-    	
     }
 }

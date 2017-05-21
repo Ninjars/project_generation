@@ -5,12 +5,13 @@ namespace Node {
     [RequireComponent(typeof(GameNode))]
     public class NodeUI : MonoBehaviour {
         public Material activeValueMaterial;
-        public Material passiveValueMaterial;
 
         [Range(0.1f, 3f)]
         public float radius = 1.0f;
         public float width = 0.25f;
         public float segmentSeparationRadians = 0.05f;
+
+        private Globals globals;
 
         private bool shouldUpdate = true;
         private GameObject uiRoot;
@@ -18,6 +19,7 @@ namespace Node {
         private List<MeshRenderer> segmentRenderers;
 
         void Awake() {
+            globals = FindObjectOfType<Globals>();
             gameNode = GetComponent<GameNode>();
             uiRoot = new GameObject();
             uiRoot.transform.SetParent(gameObject.transform);
@@ -50,7 +52,7 @@ namespace Node {
                 if (i < gameNode.getOwnerValue()) {
                     segmentMaterial = activeValueMaterial;
                 } else {
-                    segmentMaterial = passiveValueMaterial;
+                    segmentMaterial = globals.passiveValueMaterial;
                 }
                 segmentRenderers[i].GetComponent<MeshRenderer>().material = segmentMaterial;
             }

@@ -764,6 +764,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0afc55b2d53b64ce993ad663bd7197ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  passiveValueMaterial: {fileID: 2100000, guid: da6ffc6aef3578743920d2c4997b9d3e,
+    type: 2}
   playerMaterials:
   - {fileID: 2100000, guid: 3ab320738def443c9b92a130b1bcd3a9, type: 2}
   - {fileID: 2100000, guid: 16e0022a7a61d49d0bbd0d41c74a2e46, type: 2}
@@ -1103,8 +1105,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeValueMaterial: {fileID: 2100000, guid: fd30a720523e74d42b353990e9c02218, type: 2}
-  passiveValueMaterial: {fileID: 2100000, guid: da6ffc6aef3578743920d2c4997b9d3e,
-    type: 2}
   radius: 1
   width: 0.25
   segmentSeparationRadians: 0.05
@@ -1126,13 +1126,7 @@ MonoBehaviour:
   maxOutboundConnections: 1
   allowsInboundConnections: 1
   packet: {fileID: 1893740232287916, guid: 45b3c3f72cc664bc69adfd72af73ae5e, type: 2}
-  nodeUi: {fileID: 0}
-  nodeComponent: {fileID: 0}
-  gameManager: {fileID: 0}
-  globals: {fileID: 0}
-  gameNodesInRange: []
   reserveThreshold: 0.2
-  emissionIndex: 0
 --- !u!114 &1389949888
 MonoBehaviour:
   m_ObjectHideFlags: 0
