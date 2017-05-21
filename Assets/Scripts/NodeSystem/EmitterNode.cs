@@ -18,7 +18,7 @@ namespace Node {
                     emissionIndex++;
                     if (sendPacketToNode(connectedNodes[index])) {
                         changeValue(getOwnerId(), -1);
-                        nodeUi.hasUpdate();
+                        nodeUi.onUpdate(getViewModel());
                     }
                 }
             }
@@ -41,7 +41,7 @@ namespace Node {
         public override void onSlowBeat() {
             if (!isNeutral()) {
                 changeValue(getOwnerId(), 1);
-                nodeUi.hasUpdate();
+                nodeUi.onUpdate(getViewModel());
             }
         }
 

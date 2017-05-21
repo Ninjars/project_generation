@@ -126,6 +126,10 @@ namespace Node {
             return lowestPlayerId;
         }
 
+        internal int getMaxValue() {
+            return isOwned() ? maxValue : neutralValue;
+        }
+
         private int getHighestValuePlayer() {
             int playerId = GameManager.NEUTRAL_PLAYER_ID;
             int value = -1;
@@ -166,6 +170,10 @@ namespace Node {
 
         public int getNeutralValue() {
             return neutralValue;
+        }
+
+        public Dictionary<int, int> getPlayerStakes() {
+            return playerStakes;
         }
     }
 }

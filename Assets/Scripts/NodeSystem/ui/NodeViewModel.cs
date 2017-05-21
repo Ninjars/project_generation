@@ -14,10 +14,12 @@ namespace Node {
     }
 
     public struct NodeViewModel {
+        public readonly bool isOwned;
         public readonly int maxValue;
         public readonly List<PlayerMaterialViewModel> valueModel;
 
-        public NodeViewModel(int maxValue, List<PlayerMaterialViewModel> valueModel) {
+        public NodeViewModel(bool isOwned, int maxValue, List<PlayerMaterialViewModel> valueModel) {
+            this.isOwned = isOwned;
             this.maxValue = maxValue;
             this.valueModel = valueModel;
         }

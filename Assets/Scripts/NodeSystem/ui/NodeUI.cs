@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Node {
@@ -14,6 +15,8 @@ namespace Node {
         private Globals globals;
 
         private bool shouldUpdate = true;
+        private NodeViewModel viewModel;
+
         private GameObject uiRoot;
         private GameNode gameNode;
         private List<MeshRenderer> segmentRenderers;
@@ -36,16 +39,17 @@ namespace Node {
             updateRenderer();
         }
 
-        public void hasUpdate() {
+        public void onUpdate(NodeViewModel model) {
             shouldUpdate = true;
+            viewModel = model;
         }
 
         private void updateRenderer() {
             if (!shouldUpdate) {
                 return;
             }
-            if (segmentRenderers == null) {
-                segmentRenderers = createSegments(radius, width, gameNode.maxValue);
+            if (segmentRenderers == null || segmentRenderers.Count != viewModel.maxValue) {
+                segmentRenderers = createSegments(radius, width, viewModel.maxValue);
             }
             for (int i = 0; i < segmentRenderers.Count; i++) {
                 Material segmentMaterial;
@@ -60,6 +64,7 @@ namespace Node {
         }
 
         private List<MeshRenderer> createSegments(float radius, float width, int count) {
+            deleteExistingSegments();
             List<int> triangles = new List<int>() {
                     0, 1, 2,
                     1, 3, 2
@@ -86,6 +91,16 @@ namespace Node {
                 angle += segmentArc + segmentSeparationRadians;
             }
             return segments;
+        }
+
+        private void deleteExistingSegments() {
+            if (segmentRenderers == null) {
+                return;
+            }
+            foreach (MeshRenderer renderer in segmentRenderers) {
+                Destroy(renderer.gameObject);
+            }
+            segmentRenderers.Clear();
         }
 
         private List<Vector3> createSegmentVertices(float radius, float startAngle, float endAngle, float width) {
