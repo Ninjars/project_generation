@@ -33,6 +33,7 @@ namespace Node {
 
         private void Start() {
             onOwnerChange(initialOwnerId);
+            nodeUi.onUpdate(getViewModel());
         }
 
         private List<GameNode> createGameNodesInRangeList() {
