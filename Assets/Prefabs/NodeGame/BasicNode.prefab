@@ -133,18 +133,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1449208907186282}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3784469f8101eac45a54270f3bb81bdf, type: 3}
+  m_Script: {fileID: 11500000, guid: f6f8e945566d94b5a832490e75f36e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentValue: 0
-  isActive: 1
+  initialValue: 0
   maxValue: 20
-  ownerId: 0
+  initialOwnerId: 0
   maxOutboundConnections: 1
   allowsInboundConnections: 1
   packet: {fileID: 1893740232287916, guid: 45b3c3f72cc664bc69adfd72af73ae5e, type: 2}
-  secondsPerEmission: 0.5
-  secondsPerIncrease: 1
+  nodeUi: {fileID: 0}
+  nodeComponent: {fileID: 0}
+  gameManager: {fileID: 0}
+  globals: {fileID: 0}
+  gameNodesInRange: []
+  reserveThreshold: 0.2
+  emissionIndex: 0
 --- !u!114 &114463331650900448
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -153,7 +157,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1449208907186282}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0204d958cb3faf347b7c2c9ce417c32f, type: 3}
+  m_Script: {fileID: 11500000, guid: 66feca040a27f954580931e4bb353a2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   activeValueMaterial: {fileID: 2100000, guid: fd30a720523e74d42b353990e9c02218, type: 2}

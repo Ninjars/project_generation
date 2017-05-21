@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Node {
@@ -32,6 +33,7 @@ namespace Node {
 
         private void Start() {
             onOwnerChange(initialOwnerId);
+            nodeUi.onUpdate(getViewModel());
         }
 
         private List<GameNode> createGameNodesInRangeList() {
@@ -73,7 +75,7 @@ namespace Node {
 
         public void onPacket(Packet packet) {
             changeValue(packet.getOwnerId(), 1);
-            nodeUi.hasUpdate();
+            nodeUi.onUpdate(getViewModel());
         }
 
         public abstract void onSlowBeat();
@@ -121,6 +123,20 @@ namespace Node {
 
         public int getOwnerValue() {
             return currentValue.getValueForPlayer(getOwnerId());
+        }
+
+        protected NodeViewModel getViewModel() {
+            int max = currentValue.getMaxValue();
+            Dictionary<int, int> playerStakes = currentValue.getPlayerStakes();
+            List<PlayerMaterialViewModel> playerModels = new List<PlayerMaterialViewModel>();
+            foreach (KeyValuePair<int, int> entry in playerStakes) {
+                int value = entry.Value;
+                if (value > 0) {
+                    Material material = globals.playerMaterials[entry.Key];
+                    playerModels.Add(new PlayerMaterialViewModel(material, value));
+                }
+            }
+            return new NodeViewModel(currentValue.isOwned(), max, playerModels);
         }
     }
 }
