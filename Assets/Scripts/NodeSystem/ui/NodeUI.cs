@@ -50,12 +50,14 @@ namespace Node {
                 segmentRenderers = createSegments(radius, width, viewModel.maxValue);
             }
             int i = 0;
-            foreach (PlayerMaterialViewModel model in viewModel.valueModel) {
-                Material segmentMaterial = model.material;
-                for (int j = i; j < i + model.count; j++) {
-                    segmentRenderers[j].GetComponent<MeshRenderer>().material = segmentMaterial;
+            if (viewModel.valueModel != null) {
+                foreach (PlayerMaterialViewModel model in viewModel.valueModel) {
+                    Material segmentMaterial = model.material;
+                    for (int j = i; j < i + model.count; j++) {
+                        segmentRenderers[j].GetComponent<MeshRenderer>().material = segmentMaterial;
+                    }
+                    i += model.count;
                 }
-                i += model.count;
             }
             Material passiveMaterial = globals.passiveValueMaterial;
             for (int j = i; j < segmentRenderers.Count; j++) {
