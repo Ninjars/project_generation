@@ -358,6 +358,11 @@ Prefab:
       propertyPath: intialValue
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 114318602501066732, guid: 43e5060ebd7fe424cb39f105ef816c50,
+        type: 2}
+      propertyPath: initialValue
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 43e5060ebd7fe424cb39f105ef816c50, type: 2}
   m_IsPrefabParent: 0
@@ -703,6 +708,11 @@ Prefab:
         type: 2}
       propertyPath: intialValue
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114318602501066732, guid: 43e5060ebd7fe424cb39f105ef816c50,
+        type: 2}
+      propertyPath: initialValue
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 43e5060ebd7fe424cb39f105ef816c50, type: 2}
@@ -1120,7 +1130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6f8e945566d94b5a832490e75f36e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialValue: 0
+  initialValue: 5
   maxValue: 20
   initialOwnerId: 0
   maxOutboundConnections: 1
