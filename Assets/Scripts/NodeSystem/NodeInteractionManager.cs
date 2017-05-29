@@ -102,8 +102,6 @@ namespace Node {
             IList<GameNode> nodesInRange = gameManager.getNodeGraph().getConnectedNodes(selectedNode);
             if (!nodesInRange.Contains(node)) {
                 Debug.Log("NodeInteractionManager: no connection available");
-            } else if (!node.allowsInboundConnections) {
-                Debug.Log("NodeInteractionManager: not allowed to connect to " + node);
             } else if (selectedNode.isConnected(node)) {
                 Debug.Log("NodeInteractionManager: removing connection " + selectedNode + ", " + node);
                 selectedNode.clearConnection();

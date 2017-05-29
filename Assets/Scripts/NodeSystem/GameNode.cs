@@ -10,7 +10,6 @@ namespace Node {
         public int initialValue = 0;
         public int maxValue = 10;
         public int initialOwnerId = 0;
-        public bool allowsInboundConnections = true;
 
         public GameObject packet;
 
@@ -68,10 +67,6 @@ namespace Node {
         public abstract void onFastBeat();
 
         public void connectToNode(GameNode node) {
-            if (!node.allowsInboundConnections) {
-                Debug.Log("GameNode: ERROR: attempted to connect to node that doesn't allow inbound connections");
-                return;
-            }
             connection = new NodeConnection(this, node);
             GetComponent<NodeConnectionIndicator>().update();
         }
