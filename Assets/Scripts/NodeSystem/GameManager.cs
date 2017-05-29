@@ -14,6 +14,7 @@ namespace Node {
 
         private GameNode[] gameNodes;
         private BaseAi[] aiPlayers;
+        private NodeGraph nodeGraph;
 
         private float elapsedSlow = 0;
         private float elapsedMedium = 0;
@@ -23,6 +24,8 @@ namespace Node {
         void Awake() {
             gameNodes = FindObjectsOfType<GameNode>();
             aiPlayers = FindObjectsOfType<BaseAi>();
+            nodeGraph = new NodeGraph();
+            nodeGraph.populate(gameNodes);
         }
 
         // Update is called once per frame
@@ -87,6 +90,10 @@ namespace Node {
                 }
             }
             return playerNodes;
+        }
+
+        public NodeGraph getNodeGraph() {
+            return nodeGraph;
         }
     }
 }
