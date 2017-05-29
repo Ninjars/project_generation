@@ -38,8 +38,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4173429180782936}
   - component: {fileID: 114101691520635956}
-  - component: {fileID: 114318602501066732}
   - component: {fileID: 114463331650900448}
+  - component: {fileID: 114762793674381212}
   m_Layer: 10
   m_Name: BasicNode
   m_TagString: Untagged
@@ -124,27 +124,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 880f1d615f2554ebcaf3227fb03e3e7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114318602501066732
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1449208907186282}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6f8e945566d94b5a832490e75f36e4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  connectedNode: {fileID: 0}
-  connectionLineMaterial: {fileID: 2100000, guid: 16a7c457320754d6b98fe3bfc62b44bf,
-    type: 2}
-  initialValue: 0
-  maxValue: 20
-  initialOwnerId: 0
-  maxOutboundConnections: 1
-  allowsInboundConnections: 1
-  packet: {fileID: 1893740232287916, guid: 45b3c3f72cc664bc69adfd72af73ae5e, type: 2}
-  reserveThreshold: 0.2
 --- !u!114 &114463331650900448
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -160,6 +139,24 @@ MonoBehaviour:
   radius: 1
   width: 0.25
   segmentSeparationRadians: 0.05
+--- !u!114 &114762793674381212
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1449208907186282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3784469f8101eac45a54270f3bb81bdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  connectionLineMaterial: {fileID: 2100000, guid: 16a7c457320754d6b98fe3bfc62b44bf,
+    type: 2}
+  initialValue: 0
+  maxValue: 20
+  initialOwnerId: 0
+  packet: {fileID: 1893740232287916, guid: 45b3c3f72cc664bc69adfd72af73ae5e, type: 2}
+  reserveThreshold: 0.2
 --- !u!135 &135833921528846732
 SphereCollider:
   m_ObjectHideFlags: 1
@@ -170,5 +167,5 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
