@@ -34,7 +34,7 @@ namespace Node {
             List<GameNode> nodes = gameManager.getGameNodesForPlayer(playerId);
             ownedNodes.Clear();
             foreach (GameNode node in nodes) {
-                ownedNodes.Add(new AiNode(node));
+                ownedNodes.Add(new AiNode(gameManager.getNodeGraph(), node));
             }
             updateNodeConnections();
         }

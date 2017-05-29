@@ -10,7 +10,6 @@ namespace Node {
         public int initialValue = 0;
         public int maxValue = 10;
         public int initialOwnerId = 0;
-        public int maxOutboundConnections = -1;
         public bool allowsInboundConnections = true;
 
         public GameObject packet;
@@ -19,7 +18,6 @@ namespace Node {
 
         protected GameManager gameManager;
         private Globals globals;
-        private List<GameNode> gameNodesInRange;
         private NodeValue currentValue;
         private NodeConnection connection;
 
@@ -27,28 +25,12 @@ namespace Node {
             nodeUi = GetComponent<NodeUI>();
             gameManager = FindObjectOfType<GameManager>();
             globals = FindObjectOfType<Globals>();
-
-            gameNodesInRange = createGameNodesInRangeList();
             currentValue = new NodeValue(initialOwnerId, maxValue, initialValue, newOwnerId => onOwnerChange(newOwnerId));
         }
 
         private void Start() {
             onOwnerChange(initialOwnerId);
             nodeUi.onUpdate(getViewModel());
-        }
-
-        private List<GameNode> createGameNodesInRangeList() {
-            float maxRange = GameManager.nodeConnectionRange;
-            int mask = 1 << LayerMask.NameToLayer("nodes");
-            Collider[] colliders = Physics.OverlapSphere(getPosition(), maxRange, mask);
-            List<GameNode> nodes = new List<GameNode>();
-            foreach (Collider collider in colliders) {
-                GameNode node = collider.transform.gameObject.GetComponentInParent<GameNode>();
-                if (node != null && node != this) {
-                    nodes.Add(node);
-                }
-            }
-            return nodes;
         }
 
         private void onOwnerChange(int ownerId) {
@@ -90,7 +72,6 @@ namespace Node {
                 Debug.Log("GameNode: ERROR: attempted to connect to node that doesn't allow inbound connections");
                 return;
             }
-            clearConnection();
             connection = new NodeConnection(this, node);
             GetComponent<NodeConnectionIndicator>().update();
         }
@@ -105,10 +86,6 @@ namespace Node {
 
         public virtual void changeValue(int playerId, int change) {
             currentValue.changePlayerValue(playerId, change);
-        }
-
-        public List<GameNode> getGameNodesInRange() {
-            return gameNodesInRange;
         }
 
         public int getOwnerValue() {

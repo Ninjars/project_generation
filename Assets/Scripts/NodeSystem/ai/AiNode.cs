@@ -5,11 +5,13 @@ using UnityEngine;
 namespace Node {
     public class AiNode {
         public readonly GameNode node;
+        private readonly NodeGraph nodeGraph;
         private List<GameNode> targets = new List<GameNode>();
 
-        public AiNode(GameNode node) {
+        public AiNode(NodeGraph nodeGraph, GameNode node) {
             this.node = node;
-            foreach (GameNode target in node.getGameNodesInRange()) {
+            this.nodeGraph = nodeGraph;
+            foreach (GameNode target in nodeGraph.getConnectedNodes(node)) {
                 if (target.getOwnerId() != node.getOwnerId()) {
                     targets.Add(target);
                 }
@@ -25,7 +27,7 @@ namespace Node {
         }
 
         private GameNode findBestGameNodeToTarget(GameNode queryNode) {
-            List<GameNode> nodesInRange = queryNode.getGameNodesInRange();
+            IList<GameNode> nodesInRange = nodeGraph.getConnectedNodes(queryNode);
             // find closest unowned node with lowest value as initial target
             GameNode bestTarget = null;
             float bestWeighting = -1;
