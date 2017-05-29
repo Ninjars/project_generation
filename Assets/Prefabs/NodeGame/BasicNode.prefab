@@ -38,7 +38,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4173429180782936}
   - component: {fileID: 114101691520635956}
-  - component: {fileID: 114839210527173336}
   - component: {fileID: 114318602501066732}
   - component: {fileID: 114463331650900448}
   m_Layer: 10
@@ -136,19 +135,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6f8e945566d94b5a832490e75f36e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  connectedNode: {fileID: 0}
+  connectionLineMaterial: {fileID: 2100000, guid: 16a7c457320754d6b98fe3bfc62b44bf,
+    type: 2}
   initialValue: 0
   maxValue: 20
   initialOwnerId: 0
   maxOutboundConnections: 1
   allowsInboundConnections: 1
   packet: {fileID: 1893740232287916, guid: 45b3c3f72cc664bc69adfd72af73ae5e, type: 2}
-  nodeUi: {fileID: 0}
-  nodeComponent: {fileID: 0}
-  gameManager: {fileID: 0}
-  globals: {fileID: 0}
-  gameNodesInRange: []
   reserveThreshold: 0.2
-  emissionIndex: 0
 --- !u!114 &114463331650900448
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -161,25 +157,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeValueMaterial: {fileID: 2100000, guid: fd30a720523e74d42b353990e9c02218, type: 2}
-  passiveValueMaterial: {fileID: 2100000, guid: da6ffc6aef3578743920d2c4997b9d3e,
-    type: 2}
   radius: 1
   width: 0.25
   segmentSeparationRadians: 0.05
---- !u!114 &114839210527173336
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1449208907186282}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cabffbc48f82948bab09e896e705abb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  connectedNodes: []
-  connectionLineMaterial: {fileID: 2100000, guid: 16a7c457320754d6b98fe3bfc62b44bf,
-    type: 2}
 --- !u!135 &135833921528846732
 SphereCollider:
   m_ObjectHideFlags: 1
