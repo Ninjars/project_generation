@@ -21,8 +21,8 @@ namespace Node {
             }
             Material lineMaterial = gameObject.GetComponent<GameNode>().getConnectionLineMaterial();
 
-            HashSet<NodeConnection> connections = gameObject.GetComponent<GameNode>().getConnections();
-            foreach (NodeConnection connection in connections) {
+            NodeConnection connection = gameObject.GetComponent<GameNode>().getConnection();
+            if (connection != null) {
                 GameObject container = new GameObject();
                 container.transform.SetParent(gameObject.transform);
                 LineRenderer connectionRenderer = container.AddComponent<LineRenderer>();

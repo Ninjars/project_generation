@@ -11,16 +11,10 @@ namespace Node {
         private int emissionIndex;
 
         private void onEmit() {
-            if (getOwnerValue() > 0) {
-                List<GameNode> connectedNodes = getConnectedNodes();
-                if (connectedNodes.Count > 0) {
-                    int index = emissionIndex % connectedNodes.Count;
-                    emissionIndex++;
-                    if (sendPacketToNode(connectedNodes[index])) {
-                        changeValue(getOwnerId(), -1);
-                        nodeUi.onUpdate(getViewModel());
-                    }
-                }
+            GameNode connectedNode = getConnectedNodeIfPresent();
+            if (connectedNode != null && sendPacketToNode(connectedNode)) {
+                changeValue(getOwnerId(), -1);
+                nodeUi.onUpdate(getViewModel());
             }
         }
 

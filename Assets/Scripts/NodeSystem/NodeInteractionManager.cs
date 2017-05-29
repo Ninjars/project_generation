@@ -102,14 +102,14 @@ namespace Node {
                 Debug.Log("NodeInteractionManager: distance too far " + distanceBetweenNodes);
             } else if (!node.allowsInboundConnections) {
                 Debug.Log("NodeInteractionManager: not allowed to connect to " + node);
-            } else if (selectedNode.hasConnection(node)) {
+            } else if (selectedNode.isConnected(node)) {
                 Debug.Log("NodeInteractionManager: removing connection " + selectedNode + ", " + node);
-                selectedNode.removeConnection(node);
+                selectedNode.clearConnection();
             } else {
                 Debug.Log("NodeInteractionManager: adding connection " + selectedNode + ", " + node);
-                selectedNode.addConnection(node);
+                selectedNode.connectToNode(node);
                 if (selectedNode.isOwnedBySamePlayer(node)) {
-                    node.removeConnection(selectedNode);
+                    node.clearConnection();
                 }
             }
         }

@@ -6,7 +6,7 @@ namespace Node {
     [RequireComponent(typeof(NodeConnectionIndicator))]
     public abstract class GameNode : MonoBehaviour {
 
-        public List<GameObject> connectedNodes;
+        public GameObject connectedNode;
         public Material connectionLineMaterial;
 
         public int initialValue = 0;
@@ -19,23 +19,23 @@ namespace Node {
 
         protected NodeUI nodeUi;
 
-        private GameManager gameManager;
+        protected GameManager gameManager;
         private Globals globals;
         private List<GameNode> gameNodesInRange;
         private NodeValue currentValue;
-        private HashSet<NodeConnection> connections = new HashSet<NodeConnection>();
+        private NodeConnection connection;
 
         private void Awake() {
             nodeUi = GetComponent<NodeUI>();
             gameManager = FindObjectOfType<GameManager>();
             globals = FindObjectOfType<Globals>();
 
-            foreach (GameObject node in connectedNodes) {
-                GameNode nodeComponent = node.GetComponent<GameNode>();
+            if (connectedNode != null) {
+                GameNode nodeComponent = connectedNode.GetComponent<GameNode>();
                 if (nodeComponent != null) {
-                    addConnection(this);
+                    connectToNode(this);
                 } else {
-                    Debug.LogWarning("GameNode " + gameObject.name + " connectedNodes contained a gameobject with no GameNode component: " + node.name);
+                    Debug.LogWarning("GameNode " + gameObject.name + " connectedNodes contained a gameobject with no GameNode component: " + connectedNode.name);
                 }
             }
 
@@ -66,7 +66,7 @@ namespace Node {
             Debug.Log("onOwnerChange: " + gameObject.name + " to player " + ownerId);
             gameObject.GetComponentInChildren<MeshRenderer>().material = globals.playerMaterials[ownerId];
             gameManager.onGameNodeOwnerChange(this);
-            removeAllConnections();
+            clearConnection();
         }
 
         public bool isOwnedBySamePlayer(GameNode otherNode) {
@@ -96,23 +96,18 @@ namespace Node {
 
         public abstract void onFastBeat();
 
-        public void addConnection(GameNode node) {
+        public void connectToNode(GameNode node) {
             if (!node.allowsInboundConnections) {
                 Debug.Log("GameNode: ERROR: attempted to connect to node that doesn't allow inbound connections");
                 return;
             }
-            if (maxOutboundConnections < 0 || getConnections().Count < maxOutboundConnections) {
-                connections.Add(new NodeConnection(this, node));
-                GetComponent<NodeConnectionIndicator>().update();
-            } else if (maxOutboundConnections == 1) {
-                removeAllConnections();
-                connections.Add(new NodeConnection(this, node));
-                GetComponent<NodeConnectionIndicator>().update();
-            }
+            clearConnection();
+            connection = new NodeConnection(this, node);
+            GetComponent<NodeConnectionIndicator>().update();
         }
 
         public void onSelfInteraction() {
-            removeAllConnections();
+            clearConnection();
         }
 
         public bool canReceivePacket() {
@@ -145,23 +140,26 @@ namespace Node {
             return new NodeViewModel(currentValue.isOwned(), max, playerModels);
         }
 
-        public HashSet<NodeConnection> getConnections() {
-            return connections;
+        public NodeConnection getConnection() {
+            return connection;
         }
 
-        public void removeConnection(GameNode node) {
-            connections.Remove(new NodeConnection(this, node));
+        public void clearConnection() {
+            connection = null;
+            connectedNode = null;
             GetComponent<NodeConnectionIndicator>().update();
         }
 
-        public void removeAllConnections() {
-            connections.Clear();
-            GetComponent<NodeConnectionIndicator>().update();
+        public bool isConnected(GameNode node) {
+            return connection != null && connection.getOther(this) == node;
         }
 
-        public bool hasConnection(GameNode node) {
-            NodeConnection connection = new NodeConnection(this, node);
-            return connections.Contains(connection);
+        public bool isConnected() {
+            return connection != null;
+        }
+
+        public GameNode getConnectedNodeIfPresent() {
+            return isConnected() ? connection.getOther(this) : null;
         }
 
         public override string ToString() {
@@ -170,14 +168,6 @@ namespace Node {
 
         public Material getConnectionLineMaterial() {
             return connectionLineMaterial;
-        }
-
-        public List<GameNode> getConnectedNodes() {
-            List<GameNode> nodes = new List<GameNode>(connections.Count);
-            foreach (NodeConnection connection in connections) {
-                nodes.Add(connection.getOther(this));
-            }
-            return nodes;
         }
     }
 }

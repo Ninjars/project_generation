@@ -56,7 +56,7 @@ namespace Node {
          */
         private float getWeightingForNodeTarget(GameNode queryNode, GameNode targetNode) {
             bool isFriendly = queryNode.getOwnerId() == targetNode.getOwnerId();
-            if (isFriendly && targetNode.hasConnection(queryNode)) {
+            if (isFriendly && targetNode.isConnected(queryNode)) {
                 return -0.5f;
             }
             if (isFriendly && targetNode.getOwnerValue() == targetNode.maxValue) {
