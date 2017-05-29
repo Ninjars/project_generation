@@ -103,12 +103,12 @@ namespace Node {
             if (!nodesInRange.Contains(node)) {
                 Debug.Log("NodeInteractionManager: no connection available");
             } else if (selectedNode.isConnected(node)) {
-                Debug.Log("NodeInteractionManager: removing connection " + selectedNode + ", " + node);
-                selectedNode.clearConnection();
+                Debug.Log("NodeInteractionManager: already connected; ignoring");
             } else {
                 Debug.Log("NodeInteractionManager: adding connection " + selectedNode + ", " + node);
                 selectedNode.connectToNode(node);
-                if (selectedNode.isOwnedBySamePlayer(node)) {
+                if (selectedNode.isOwnedBySamePlayer(node) && node.isConnected(selectedNode)) {
+                    Debug.Log("NodeInteractionManager: >> clearing reciprocal connection");
                     node.clearConnection();
                 }
             }
