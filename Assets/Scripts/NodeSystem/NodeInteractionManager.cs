@@ -1,10 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Node {
     public class NodeInteractionManager : MonoBehaviour {
 
         public GameObject rangeIndicatorObject;
 
+        private GameManager gameManager;
         private NodeRangeIndicator rangeIndicatorScript;
         private GameObject rangeIndicatorInstance;
         private GameNode selectedNode = null;
@@ -13,6 +15,7 @@ namespace Node {
         private int activePlayerId = 1;
 
         void Awake() {
+            gameManager = FindObjectOfType<GameManager>();
             baseCollisionPlane = new Plane(Vector3.up, Vector3.zero);
         }
 
@@ -95,11 +98,10 @@ namespace Node {
         }
 
         private void connectionInteraction(GameNode node) {
-            Debug.Log("NodeInteractionManager: connectionInteraction()");
-            // limit node connection range
-            float distanceBetweenNodes = Vector3.Distance(node.getPosition(), selectedNode.getPosition());
-            if (distanceBetweenNodes > GameManager.nodeConnectionRange) {
-                Debug.Log("NodeInteractionManager: distance too far " + distanceBetweenNodes);
+            Debug.Log("NodeInteractionManager: connectionInteraction " + selectedNode.name + " to " + node.name);
+            IList<GameNode> nodesInRange = gameManager.getNodeGraph().getConnectedNodes(selectedNode);
+            if (!nodesInRange.Contains(node)) {
+                Debug.Log("NodeInteractionManager: no connection available");
             } else if (!node.allowsInboundConnections) {
                 Debug.Log("NodeInteractionManager: not allowed to connect to " + node);
             } else if (selectedNode.isConnected(node)) {
