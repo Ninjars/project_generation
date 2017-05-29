@@ -12,7 +12,7 @@ namespace Node {
 
         private void onEmit() {
             if (getOwnerValue() > 0) {
-                List<Node> connectedNodes = nodeComponent.getConnectedNodes();
+                List<GameNode> connectedNodes = getConnectedNodes();
                 if (connectedNodes.Count > 0) {
                     int index = emissionIndex % connectedNodes.Count;
                     emissionIndex++;
@@ -24,8 +24,7 @@ namespace Node {
             }
         }
 
-        private bool sendPacketToNode(Node node) {
-            GameNode gameNode = node.gameObject.GetComponent<GameNode>();
+        private bool sendPacketToNode(GameNode gameNode) {
             bool differentTeam = !isOwnedBySamePlayer(gameNode);
             if (differentTeam || gameNode.canReceivePacket()) {
                 GameObject packetObj = Instantiate(packet, transform.position, transform.rotation);

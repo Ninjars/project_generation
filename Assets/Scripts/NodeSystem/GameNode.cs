@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Node {
-    [RequireComponent(typeof(Node))]
+    [RequireComponent(typeof(NodeConnectionIndicator))]
     public abstract class GameNode : MonoBehaviour {
+
+        public List<GameObject> connectedNodes;
+        public Material connectionLineMaterial;
 
         public int initialValue = 0;
         public int maxValue = 10;
@@ -15,18 +18,27 @@ namespace Node {
         public GameObject packet;
 
         protected NodeUI nodeUi;
-        protected Node nodeComponent;
 
         private GameManager gameManager;
         private Globals globals;
         private List<GameNode> gameNodesInRange;
         private NodeValue currentValue;
+        private HashSet<NodeConnection> connections = new HashSet<NodeConnection>();
 
         private void Awake() {
             nodeUi = GetComponent<NodeUI>();
-            nodeComponent = GetComponent<Node>();
             gameManager = FindObjectOfType<GameManager>();
             globals = FindObjectOfType<Globals>();
+
+            foreach (GameObject node in connectedNodes) {
+                GameNode nodeComponent = node.GetComponent<GameNode>();
+                if (nodeComponent != null) {
+                    addConnection(this);
+                } else {
+                    Debug.LogWarning("GameNode " + gameObject.name + " connectedNodes contained a gameobject with no GameNode component: " + node.name);
+                }
+            }
+
             gameNodesInRange = createGameNodesInRangeList();
             currentValue = new NodeValue(initialOwnerId, maxValue, initialValue, newOwnerId => onOwnerChange(newOwnerId));
         }
@@ -54,7 +66,7 @@ namespace Node {
             Debug.Log("onOwnerChange: " + gameObject.name + " to player " + ownerId);
             gameObject.GetComponentInChildren<MeshRenderer>().material = globals.playerMaterials[ownerId];
             gameManager.onGameNodeOwnerChange(this);
-            nodeComponent.removeAllConnections();
+            removeAllConnections();
         }
 
         public bool isOwnedBySamePlayer(GameNode otherNode) {
@@ -84,29 +96,23 @@ namespace Node {
 
         public abstract void onFastBeat();
 
-        public bool hasConnection(GameNode otherNode) {
-            return nodeComponent.hasConnection(otherNode.nodeComponent);
-        }
-
-        public void removeConnection(GameNode otherNode) {
-            nodeComponent.removeConnection(otherNode.nodeComponent);
-        }
-
-        public void addConnection(GameNode otherNode) {
-            if (!otherNode.allowsInboundConnections) {
+        public void addConnection(GameNode node) {
+            if (!node.allowsInboundConnections) {
                 Debug.Log("GameNode: ERROR: attempted to connect to node that doesn't allow inbound connections");
                 return;
             }
-            if (maxOutboundConnections < 0 || nodeComponent.getConnections().Count < maxOutboundConnections) {
-                nodeComponent.addConnection(otherNode.nodeComponent);
+            if (maxOutboundConnections < 0 || getConnections().Count < maxOutboundConnections) {
+                connections.Add(new NodeConnection(this, node));
+                GetComponent<NodeConnectionIndicator>().update();
             } else if (maxOutboundConnections == 1) {
-                nodeComponent.removeAllConnections();
-                nodeComponent.addConnection(otherNode.nodeComponent);
+                removeAllConnections();
+                connections.Add(new NodeConnection(this, node));
+                GetComponent<NodeConnectionIndicator>().update();
             }
         }
 
         public void onSelfInteraction() {
-            nodeComponent.removeAllConnections();
+            removeAllConnections();
         }
 
         public bool canReceivePacket() {
@@ -137,6 +143,41 @@ namespace Node {
                 }
             }
             return new NodeViewModel(currentValue.isOwned(), max, playerModels);
+        }
+
+        public HashSet<NodeConnection> getConnections() {
+            return connections;
+        }
+
+        public void removeConnection(GameNode node) {
+            connections.Remove(new NodeConnection(this, node));
+            GetComponent<NodeConnectionIndicator>().update();
+        }
+
+        public void removeAllConnections() {
+            connections.Clear();
+            GetComponent<NodeConnectionIndicator>().update();
+        }
+
+        public bool hasConnection(GameNode node) {
+            NodeConnection connection = new NodeConnection(this, node);
+            return connections.Contains(connection);
+        }
+
+        public override string ToString() {
+            return "<GameNode " + gameObject.name + " @ " + getPosition() + ">";
+        }
+
+        public Material getConnectionLineMaterial() {
+            return connectionLineMaterial;
+        }
+
+        public List<GameNode> getConnectedNodes() {
+            List<GameNode> nodes = new List<GameNode>(connections.Count);
+            foreach (NodeConnection connection in connections) {
+                nodes.Add(connection.getOther(this));
+            }
+            return nodes;
         }
     }
 }

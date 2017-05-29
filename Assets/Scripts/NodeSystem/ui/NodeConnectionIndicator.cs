@@ -19,9 +19,9 @@ namespace Node {
                 }
                 lineRenderers.Clear();
             }
-            Material lineMaterial = gameObject.GetComponent<Node>().getConnectionLineMaterial();
+            Material lineMaterial = gameObject.GetComponent<GameNode>().getConnectionLineMaterial();
 
-            HashSet<NodeConnection> connections = gameObject.GetComponent<Node>().getConnections();
+            HashSet<NodeConnection> connections = gameObject.GetComponent<GameNode>().getConnections();
             foreach (NodeConnection connection in connections) {
                 GameObject container = new GameObject();
                 container.transform.SetParent(gameObject.transform);
