@@ -5,8 +5,6 @@ using UnityEngine;
 namespace Node {
     [RequireComponent(typeof(NodeConnectionIndicator))]
     public abstract class GameNode : MonoBehaviour {
-
-        public GameObject connectedNode;
         public Material connectionLineMaterial;
 
         public int initialValue = 0;
@@ -29,15 +27,6 @@ namespace Node {
             nodeUi = GetComponent<NodeUI>();
             gameManager = FindObjectOfType<GameManager>();
             globals = FindObjectOfType<Globals>();
-
-            if (connectedNode != null) {
-                GameNode nodeComponent = connectedNode.GetComponent<GameNode>();
-                if (nodeComponent != null) {
-                    connectToNode(this);
-                } else {
-                    Debug.LogWarning("GameNode " + gameObject.name + " connectedNodes contained a gameobject with no GameNode component: " + connectedNode.name);
-                }
-            }
 
             gameNodesInRange = createGameNodesInRangeList();
             currentValue = new NodeValue(initialOwnerId, maxValue, initialValue, newOwnerId => onOwnerChange(newOwnerId));
@@ -146,7 +135,6 @@ namespace Node {
 
         public void clearConnection() {
             connection = null;
-            connectedNode = null;
             GetComponent<NodeConnectionIndicator>().update();
         }
 
