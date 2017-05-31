@@ -4,12 +4,19 @@ using UnityEngine;
 
 namespace Node {
     [RequireComponent(typeof(NodeConnectionIndicator))]
-    public abstract class GameNode : MonoBehaviour {
+    public class GameNode : MonoBehaviour {
         public Material connectionLineMaterial;
 
         public int initialValue = 0;
         public int maxValue = 10;
+        [Range(0f, 1f)]
+        [Tooltip("% of maxValue below which nothing will be emitted")]
+        public float reserveThreshold = 0.2f;
+
         public int initialOwnerId = 0;
+
+        [Tooltip("once owned, this node will generate this many packets per slow tick")]
+        public int packetsPerTick = 1;
 
         public GameObject packet;
 
@@ -32,6 +39,7 @@ namespace Node {
             nodeUi.onUpdate(getViewModel());
         }
 
+        #region ownership handling
         private void onOwnerChange(int ownerId) {
             Debug.Log("onOwnerChange: " + gameObject.name + " to player " + ownerId);
             gameObject.GetComponentInChildren<MeshRenderer>().material = globals.playerMaterials[ownerId];
@@ -54,31 +62,64 @@ namespace Node {
         public Vector3 getPosition() {
             return gameObject.transform.position;
         }
+        #endregion
 
+
+        #region packet handling
         public void onPacket(Packet packet) {
             changeValue(packet.getOwnerId(), 1);
             nodeUi.onUpdate(getViewModel());
-        }
-
-        public abstract void onSlowBeat();
-
-        public abstract void onMediumBeat();
-
-        public abstract void onFastBeat();
-
-        public void connectToNode(GameNode node) {
-            connection = new NodeConnection(this, node);
-            GetComponent<NodeConnectionIndicator>().update();
-        }
-
-        public void onSelfInteraction() {
-            clearConnection();
         }
 
         public bool canReceivePacket() {
             return currentValue.getValueForPlayer(getOwnerId()) < maxValue;
         }
 
+        public void onSlowBeat() {
+            if (!isNeutral()) {
+                changeValue(getOwnerId(), packetsPerTick);
+                nodeUi.onUpdate(getViewModel());
+            }
+        }
+
+        public void onMediumBeat() {
+            // nothing to see here
+        }
+
+        public void onFastBeat() {
+            if (isEmittingFast()) {
+                onEmit();
+            }
+        }
+
+        private bool isEmittingFast() {
+            return getOwnerValue() / (float)maxValue >= reserveThreshold;
+        }
+
+        private void onEmit() {
+            GameNode connectedNode = getConnectedNodeIfPresent();
+            if (connectedNode != null && sendPacketToNode(connectedNode)) {
+                changeValue(getOwnerId(), -1);
+                nodeUi.onUpdate(getViewModel());
+            }
+        }
+
+        private bool sendPacketToNode(GameNode gameNode) {
+            bool differentTeam = !isOwnedBySamePlayer(gameNode);
+            if (differentTeam || gameNode.canReceivePacket()) {
+                GameObject packetObj = Instantiate(packet, transform.position, transform.rotation);
+                Packet packetScript = packetObj.GetComponent<Packet>();
+                packetScript.target = gameNode;
+                packetScript.setOwnerId(getOwnerId());
+                return true;
+            } else {
+                return false;
+            }
+        }
+        #endregion
+
+
+        #region value handling
         public virtual void changeValue(int playerId, int change) {
             currentValue.changePlayerValue(playerId, change);
         }
@@ -86,19 +127,16 @@ namespace Node {
         public int getOwnerValue() {
             return currentValue.getValueForPlayer(getOwnerId());
         }
+        #endregion
 
-        protected NodeViewModel getViewModel() {
-            int max = currentValue.getMaxValue();
-            Dictionary<int, int> playerStakes = currentValue.getPlayerStakes();
-            List<PlayerMaterialViewModel> playerModels = new List<PlayerMaterialViewModel>();
-            foreach (KeyValuePair<int, int> entry in playerStakes) {
-                int value = entry.Value;
-                if (value > 0) {
-                    Material material = globals.playerMaterials[entry.Key];
-                    playerModels.Add(new PlayerMaterialViewModel(material, value));
-                }
-            }
-            return new NodeViewModel(currentValue.isOwned(), max, playerModels);
+        #region connection handling
+        public void connectToNode(GameNode node) {
+            connection = new NodeConnection(this, node);
+            GetComponent<NodeConnectionIndicator>().update();
+        }
+
+        public void onSelfInteraction() {
+            clearConnection();
         }
 
         public NodeConnection getConnection() {
@@ -121,13 +159,31 @@ namespace Node {
         public GameNode getConnectedNodeIfPresent() {
             return isConnected() ? connection.getOther(this) : null;
         }
+        #endregion
+
+
+        #region ui handling
+        public Material getConnectionLineMaterial() {
+            return connectionLineMaterial;
+        }
+
+        protected NodeViewModel getViewModel() {
+            int max = currentValue.getMaxValue();
+            Dictionary<int, int> playerStakes = currentValue.getPlayerStakes();
+            List<PlayerMaterialViewModel> playerModels = new List<PlayerMaterialViewModel>();
+            foreach (KeyValuePair<int, int> entry in playerStakes) {
+                int value = entry.Value;
+                if (value > 0) {
+                    Material material = globals.playerMaterials[entry.Key];
+                    playerModels.Add(new PlayerMaterialViewModel(material, value));
+                }
+            }
+            return new NodeViewModel(currentValue.isOwned(), max, playerModels);
+        }
+        #endregion
 
         public override string ToString() {
             return "<GameNode " + gameObject.name + " @ " + getPosition() + ">";
-        }
-
-        public Material getConnectionLineMaterial() {
-            return connectionLineMaterial;
         }
     }
 }
