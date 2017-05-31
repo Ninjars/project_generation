@@ -13,6 +13,8 @@ namespace Node {
         private Plane baseCollisionPlane;
 
         private int activePlayerId = 1;
+        private float interactionStartTime;
+        private const float selfInteractionTimeThreshold = 0.5f;
 
         void Awake() {
             gameManager = FindObjectOfType<GameManager>();
@@ -43,6 +45,7 @@ namespace Node {
             Debug.Log("NodeInteractionManager: clearInteraction()");
             selectedNode = null;
             hideRangeIndicator();
+            interactionStartTime = -1f;
         }
 
         private bool checkForNodeInteraction(Ray ray) {
@@ -83,18 +86,26 @@ namespace Node {
             if (node.getOwnerId() == activePlayerId) {
                 selectedNode = node;
                 showRangeIndicator(node.getPosition());
+                interactionStartTime = Time.time;
             }
         }
 
         private void endInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: endInteraction()");
             Debug.Assert(selectedNode != null);
-            if (node.Equals(selectedNode)) {
+            bool isSameNode = node.Equals(selectedNode);
+            if (isSameNode && isDoubleTap()) {
                 selectedNode.onSelfInteraction();
-            } else {
+            } else if (!isSameNode) {
                 connectionInteraction(node);
+            } else {
+                selectedNode.clearConnection();
             }
             clearInteraction();
+        }
+
+        private bool isDoubleTap() {
+            return interactionStartTime > 0 && Time.time - interactionStartTime <= selfInteractionTimeThreshold;
         }
 
         private void connectionInteraction(GameNode node) {

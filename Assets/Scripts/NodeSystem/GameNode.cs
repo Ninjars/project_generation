@@ -8,10 +8,12 @@ namespace Node {
         public Material connectionLineMaterial;
 
         public int initialValue = 0;
-        public int maxValue = 10;
+        public int maxValue = 20;
         [Range(0f, 1f)]
         [Tooltip("% of maxValue below which nothing will be emitted")]
         public float reserveThreshold = 0.2f;
+        [Tooltip("Number of packets that are consumed to upgrade. Negative number indicates cannot upgrade.")]
+        public int upgradeCost = 15;
 
         public int initialOwnerId = 0;
 
@@ -72,7 +74,7 @@ namespace Node {
         }
 
         public bool canReceivePacket() {
-            return currentValue.getValueForPlayer(getOwnerId()) < maxValue;
+            return currentValue.getValueForPlayer(getOwnerId()) < currentValue.getMaxValue();
         }
 
         public void onSlowBeat() {
@@ -129,14 +131,28 @@ namespace Node {
         }
         #endregion
 
+
+        #region upgrade handling
+        public void onSelfInteraction() {
+            attemptUpgrade();
+        }
+
+        private void attemptUpgrade() {
+            if (upgradeCost > 0 && currentValue.isUncontested() && currentValue.isOwned() && currentValue.getTotalValue() >= upgradeCost) {
+                currentValue.changePlayerValue(getOwnerId(), -upgradeCost);
+                currentValue.setMaxValue(currentValue.getMaxValue() * 2);
+                packetsPerTick *= 2;
+                upgradeCost = -1;
+                nodeUi.onUpdate(getViewModel());
+            }
+        }
+        #endregion
+
+
         #region connection handling
         public void connectToNode(GameNode node) {
             connection = new NodeConnection(this, node);
             GetComponent<NodeConnectionIndicator>().update();
-        }
-
-        public void onSelfInteraction() {
-            clearConnection();
         }
 
         public NodeConnection getConnection() {

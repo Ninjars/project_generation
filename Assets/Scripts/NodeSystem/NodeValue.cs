@@ -27,6 +27,10 @@ namespace Node {
             this.onOwnerChangeCallback = onOwnerChangeCallback;
         }
 
+        public void setMaxValue(int newValue) {
+            maxValue = newValue;
+        }
+
         private void setOwningPlayer(int player) {
             if (player != GameManager.NEUTRAL_PLAYER_ID) {
                 // once captured, remove the neutral value buffer
