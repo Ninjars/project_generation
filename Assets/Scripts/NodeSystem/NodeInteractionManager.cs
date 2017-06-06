@@ -13,6 +13,7 @@ namespace Node {
         private Plane baseCollisionPlane;
 
         private int activePlayerId = 1;
+        private bool clickStarted;
         private float interactionStartTime;
         private const float selfInteractionTimeThreshold = 0.5f;
 
@@ -24,7 +25,15 @@ namespace Node {
         void Update() {
             if (Input.GetMouseButtonDown(0)) {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                checkForNodeInteraction(ray);
+                GameNode interactedNode = checkForNodeInteraction(ray);
+                clickStarted = openInteraction(interactedNode);
+
+            } else if (clickStarted && Input.GetMouseButtonUp(0)) {
+                // process click
+                clickStarted = false;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                GameNode interactedNode = checkForNodeInteraction(ray);
+                closeInteraction(interactedNode);
             }
 
             if (rangeIndicatorInstance != null && rangeIndicatorInstance.activeSelf) {
@@ -48,15 +57,14 @@ namespace Node {
             interactionStartTime = -1f;
         }
 
-        private bool checkForNodeInteraction(Ray ray) {
+        private GameNode checkForNodeInteraction(Ray ray) {
             float distance;
             int mask = 1 << LayerMask.NameToLayer("nodes");
             RaycastHit hit;
             Physics.Raycast(ray, out hit, Mathf.Infinity, mask);
             if (hit.collider != null) {
                 Debug.Log("NodeInteractionManager: click on gameobject: " + hit.collider.gameObject);
-                GameNode selectedNode = hit.collider.transform.parent.gameObject.GetComponent<GameNode>();
-                return onInteraction(selectedNode);
+                return hit.collider.transform.parent.gameObject.GetComponent<GameNode>();
 
             } else {
                 clearInteraction();
@@ -64,48 +72,58 @@ namespace Node {
                     Vector3 hitPoint = ray.GetPoint(distance);
                     Debug.Log("NodeInteractionManager: click at position: " + hitPoint);
                 }
+                return null;
+            }
+        }
+
+        private bool openInteraction(GameNode node) {
+            Debug.Log("NodeInteractionManager: openInteraction() " + node);
+            if (node != null && node.getOwnerId() == activePlayerId) {
+                interactionStartTime = Time.time;
+                return true;
+            } else {
+                clearInteraction();
                 return false;
             }
         }
 
-        private bool onInteraction(GameNode node) {
-            Debug.Log("NodeInteractionManager: onInteraction() " + node);
+        private void closeInteraction(GameNode node) {
+            Debug.Log("NodeInteractionManager: closeInteraction() " + node);
             if (node == null) {
                 clearInteraction();
-                return false;
+
             } else if (selectedNode == null) {
-                beginInteraction(node);
+                bool isLongClick = Time.time - interactionStartTime > selfInteractionTimeThreshold;
+                if (isLongClick) {
+                    Debug.Log("NodeInteractionManager: >> long click");
+                    node.onSelfInteraction();
+                    clearInteraction();
+
+                } else {
+                    beginInteraction(node);
+                }
+
             } else {
                 endInteraction(node);
             }
-            return true;
         }
 
         private void beginInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: beginInteraction()");
-            if (node.getOwnerId() == activePlayerId) {
-                selectedNode = node;
-                showRangeIndicator(node.getPosition());
-                interactionStartTime = Time.time;
-            }
+            selectedNode = node;
+            showRangeIndicator(node.getPosition());
         }
 
         private void endInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: endInteraction()");
             Debug.Assert(selectedNode != null);
             bool isSameNode = node.Equals(selectedNode);
-            if (isSameNode && isDoubleTap()) {
-                selectedNode.onSelfInteraction();
-            } else if (!isSameNode) {
-                connectionInteraction(node);
-            } else {
+            if (isSameNode) {
                 selectedNode.clearConnection();
+            } else {
+                connectionInteraction(node);
             }
             clearInteraction();
-        }
-
-        private bool isDoubleTap() {
-            return interactionStartTime > 0 && Time.time - interactionStartTime <= selfInteractionTimeThreshold;
         }
 
         private void connectionInteraction(GameNode node) {
