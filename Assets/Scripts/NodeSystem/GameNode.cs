@@ -22,6 +22,9 @@ namespace Node {
 
         public GameObject packet;
 
+        private PathGen.PathwayGenerator pathGenerator;
+        private GameObject pathMeshContainer;
+
         protected NodeUI nodeUi;
 
         protected GameManager gameManager;
@@ -34,6 +37,7 @@ namespace Node {
             gameManager = FindObjectOfType<GameManager>();
             globals = FindObjectOfType<Globals>();
             currentValue = new NodeValue(initialOwnerId, maxValue, initialValue, newOwnerId => onOwnerChange(newOwnerId));
+            pathGenerator = gameObject.GetComponent<PathGen.PathwayGenerator>();
         }
 
         private void Start() {
@@ -153,6 +157,13 @@ namespace Node {
         public void connectToNode(GameNode node) {
             connection = new NodeConnection(this, node);
             GetComponent<NodeConnectionIndicator>().update();
+
+            if (pathGenerator != null) {
+                if (pathMeshContainer != null) {
+                    GameObject.Destroy(pathMeshContainer);
+                }
+                pathMeshContainer = pathGenerator.createConnection(gameObject, node.transform.position);
+            }
         }
 
         public NodeConnection getConnection() {
@@ -162,6 +173,10 @@ namespace Node {
         public void clearConnection() {
             connection = null;
             GetComponent<NodeConnectionIndicator>().update();
+
+            if (pathMeshContainer != null) {
+                GameObject.Destroy(pathMeshContainer);
+            }
         }
 
         public bool isConnected(GameNode node) {
