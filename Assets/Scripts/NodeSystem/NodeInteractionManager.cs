@@ -81,6 +81,8 @@ namespace Node {
             if (node != null && node.getOwnerId() == activePlayerId) {
                 interactionStartTime = Time.time;
                 return true;
+            } else if(selectedNode != null) {
+                return true;
             } else {
                 clearInteraction();
                 return false;
