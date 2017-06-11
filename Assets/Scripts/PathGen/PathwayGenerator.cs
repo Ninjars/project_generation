@@ -17,6 +17,7 @@ namespace PathGen {
         public GameObject createConnection(GameObject start, Vector3 end) {
             Mesh mesh = pathMeshGenerator.generateMesh(start.transform.position, end);
             GameObject container = new GameObject();
+            container.name = "PathMesh";
             container.transform.parent = start.transform;
             MeshFilter meshFilter = container.AddComponent<MeshFilter>();
             meshFilter.mesh = mesh;
