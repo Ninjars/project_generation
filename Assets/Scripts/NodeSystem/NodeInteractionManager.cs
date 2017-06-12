@@ -78,15 +78,15 @@ namespace Node {
 
         private bool openInteraction(GameNode node) {
             Debug.Log("NodeInteractionManager: openInteraction() " + node);
-            if (node != null && node.getOwnerId() == activePlayerId) {
-                interactionStartTime = Time.time;
-                return true;
-            } else if(selectedNode != null) {
-                return true;
-            } else {
+            if (node == null) {
                 clearInteraction();
                 return false;
             }
+
+            if (selectedNode == null && node.getOwnerId() == activePlayerId) {
+                interactionStartTime = Time.time;
+            }
+            return true;
         }
 
         private void closeInteraction(GameNode node) {
