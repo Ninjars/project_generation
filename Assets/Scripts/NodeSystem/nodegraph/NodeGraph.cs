@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Node {
     public class NodeGraph {
@@ -38,6 +39,52 @@ namespace Node {
 
         public IList<GameNode> getConnectedNodes(GameNode node) {
             return connectionsForNodes[node];
+        }
+
+        public List<GameNode> findShortestFriendlyPath(GameNode fromNode, GameNode toNode) {
+            Debug.Assert(fromNode.getOwnerId() == toNode.getOwnerId());
+
+            List<GameNode> checkedNodes = new List<GameNode>();
+            List<List<GameNode>> currentWorkingPaths = new List<List<GameNode>>();
+            List<List<GameNode>> nextGenerationPaths = new List<List<GameNode>>();
+            checkedNodes.Add(fromNode);
+
+            foreach (GameNode node in getNewFriendlyConnectableNodes(fromNode, checkedNodes)) {
+                List<GameNode> currentPath = new List<GameNode>();
+                currentPath.Add(fromNode);
+                currentPath.Add(node);
+                if (node == toNode) {
+                    return currentPath;
+                } else {
+                    currentWorkingPaths.Add(currentPath);
+                }
+            }
+            for (int generation = 0; generation < connectionsForNodes.Count; generation++) {
+                foreach (List<GameNode> path in currentWorkingPaths) {
+                    GameNode workingNode = path[path.Count - 1];
+                    checkedNodes.Add(workingNode);
+                    foreach (GameNode node in getNewFriendlyConnectableNodes(workingNode, checkedNodes)) {
+                        List<GameNode> workingPath = new List<GameNode>();
+                        workingPath.AddRange(path);
+                        workingPath.Add(node);
+                        if (node == toNode) {
+                            return workingPath;
+                        } else {
+                            nextGenerationPaths.Add(workingPath);
+                        }
+                    }
+                    currentWorkingPaths.Clear();
+                    currentWorkingPaths.AddRange(nextGenerationPaths);
+                    nextGenerationPaths.Clear();
+                }
+            }
+            return null;
+        }
+
+        private List<GameNode> getNewFriendlyConnectableNodes(GameNode a, List<GameNode> checkedNodes) {
+            return connectionsForNodes[a]
+                .Where(node => node.getOwnerId() == a.getOwnerId() && !checkedNodes.Contains(node))
+                .ToList();
         }
     }
 }
