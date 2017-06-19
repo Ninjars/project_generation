@@ -12,7 +12,7 @@ namespace Node {
         private bool targetsInRange;
         private Player player;
 
-        void Awake() {
+        public override void Awake() {
             base.Awake();
             player = gameObject.GetComponent<Player>();
         }
