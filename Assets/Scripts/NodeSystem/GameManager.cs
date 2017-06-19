@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Node {
+    [RequireComponent(typeof(Player))]
     public class GameManager : MonoBehaviour {
-        internal static readonly int NEUTRAL_PLAYER_ID = 0;
+        private static readonly int NEUTRAL_PLAYER_ID = 0;
 
         public static float nodeConnectionRange = 10f;
 
@@ -15,17 +16,25 @@ namespace Node {
         private GameNode[] gameNodes;
         private BaseAi[] aiPlayers;
         private NodeGraph nodeGraph;
+        private Player neutralPlayer;
 
         private float elapsedSlow = 0;
         private float elapsedMedium = 0;
         private float elapsedFast = 0;
 
+
         // Use this for initialization
         void Awake() {
+            neutralPlayer = GetComponent<Player>();
+            neutralPlayer.id = NEUTRAL_PLAYER_ID;
             gameNodes = FindObjectsOfType<GameNode>();
             aiPlayers = FindObjectsOfType<BaseAi>();
             nodeGraph = new NodeGraph();
             nodeGraph.populate(gameNodes);
+        }
+
+        public Player getNeutralPlayer() {
+            return neutralPlayer;
         }
 
         // Update is called once per frame
@@ -82,10 +91,10 @@ namespace Node {
             }
         }
 
-        public List<GameNode> getGameNodesForPlayer(int playerId) {
+        public List<GameNode> getGameNodesForPlayer(Player player) {
             List<GameNode> playerNodes = new List<GameNode>();
             foreach (GameNode node in gameNodes) {
-                if (node.getOwnerId() == playerId) {
+                if (node.getOwningPlayer() == player) {
                     playerNodes.Add(node);
                 }
             }

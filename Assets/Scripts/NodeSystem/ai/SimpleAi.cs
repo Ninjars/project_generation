@@ -4,12 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Node {
+    [RequireComponent(typeof(Player))]
     public class SimpleAi : BaseAi {
-        public int playerId;
 
         private List<AiNode> ownedNodes = new List<AiNode>();
 
         private bool targetsInRange;
+        private Player player;
+
+        void Awake() {
+            base.Awake();
+            player = gameObject.GetComponent<Player>();
+        }
 
         // Use this for initialization
         void Start() {
@@ -31,7 +37,7 @@ namespace Node {
         }
 
         private void updateOwnedNodes() {
-            List<GameNode> nodes = gameManager.getGameNodesForPlayer(playerId);
+            List<GameNode> nodes = gameManager.getGameNodesForPlayer(player);
             ownedNodes.Clear();
             foreach (GameNode node in nodes) {
                 ownedNodes.Add(new AiNode(gameManager.getNodeGraph(), node));

@@ -5,16 +5,18 @@ using System.Linq;
 namespace Node {
     public class NodeValue {
 
-        private Dictionary<int, int> playerStakes = new Dictionary<int, int>();
+        private Dictionary<Player, int> playerStakes = new Dictionary<Player, int>();
         private int neutralValue;
         private int maxValue;
-        private int owningPlayer = GameManager.NEUTRAL_PLAYER_ID;
-        private Action<int> onOwnerChangeCallback;
+        private Player owningPlayer;
+        private Action<Player> onOwnerChangeCallback;
+        private GameManager gameManager;
 
-        public NodeValue(int player, int maximumValue, int initialValue, Action<int> onOwnerChangeCallback) {
+        public NodeValue(GameManager gameManager, Player player, int maximumValue, int initialValue, Action<Player> onOwnerChangeCallback) {
+            this.gameManager = gameManager;
             maxValue = maximumValue;
             if (initialValue > 0) {
-                if (player == GameManager.NEUTRAL_PLAYER_ID) {
+                if (player.isNeutralPlayer()) {
                     neutralValue = initialValue;
                 } else {
                     playerStakes[player] = initialValue;
@@ -31,8 +33,8 @@ namespace Node {
             maxValue = newValue;
         }
 
-        private void setOwningPlayer(int player) {
-            if (player != GameManager.NEUTRAL_PLAYER_ID) {
+        private void setOwningPlayer(Player player) {
+            if (!player.isNeutralPlayer()) {
                 // once captured, remove the neutral value buffer
                 neutralValue = 0;
             }
@@ -40,7 +42,7 @@ namespace Node {
             onOwnerChangeCallback(player);
         }
 
-        public void changePlayerValue(int player, int value) {
+        public void changePlayerValue(Player player, int value) {
             if (isOwned()) {
                 // update owning player value accordingly, possibly removing ownership if stake falls below 1
                 if (player == owningPlayer) {
@@ -76,10 +78,10 @@ namespace Node {
         private void checkForOwnerChange() {
             bool isOwned = isUncontested() && playerStakes.Values.DefaultIfEmpty(-1).First() >= neutralValue;
             if (isOwned) {
-                int owningId = playerStakes.Keys.DefaultIfEmpty(0).First();
-                bool ownerChange = owningId != getOwnerId();
+                Player owningPlayer = playerStakes.Keys.DefaultIfEmpty(gameManager.getNeutralPlayer()).First();
+                bool ownerChange = owningPlayer != getOwningPlayer();
                 if (ownerChange) {
-                    setOwningPlayer(owningId);
+                    setOwningPlayer(owningPlayer);
                 }
             }
         }
@@ -98,12 +100,12 @@ namespace Node {
             return ownerChange;
         }
 
-        private void purgeOtherPlayersRecursively(int player, int valueToPurge) {
+        private void purgeOtherPlayersRecursively(Player player, int valueToPurge) {
             if (isUncontested()) {
                 return;
             }
             int remainingToPurge = valueToPurge;
-            int targetPlayer = getLowestValuePlayer(player);
+            Player targetPlayer = getLowestValuePlayer(player);
             int playerValue;
             playerStakes.TryGetValue(targetPlayer, out playerValue);
             playerValue -= remainingToPurge;
@@ -116,34 +118,34 @@ namespace Node {
             }
         }
 
-        private int getLowestValuePlayer(int excludePlayerId) {
-            int lowestPlayerId = -1;
+        private Player getLowestValuePlayer(Player excludePlayer) {
+            Player player = gameManager.getNeutralPlayer();
             int lowestValue = -1;
-            foreach (KeyValuePair<int, int> entry in playerStakes) {
-                if (entry.Key == excludePlayerId) {
+            foreach (KeyValuePair<Player, int> entry in playerStakes) {
+                if (entry.Key == excludePlayer) {
                     continue;
                 } else if (entry.Value > lowestValue) {
                     lowestValue = entry.Value;
-                    lowestPlayerId = entry.Key;
+                    player = entry.Key;
                 }
             }
-            return lowestPlayerId;
+            return player;
         }
 
         internal int getMaxValue() {
             return isOwned() ? maxValue : neutralValue;
         }
 
-        private int getHighestValuePlayer() {
-            int playerId = GameManager.NEUTRAL_PLAYER_ID;
+        private Player getHighestValuePlayer() {
+            Player player = gameManager.getNeutralPlayer();
             int value = -1;
-            foreach (KeyValuePair<int, int> entry in playerStakes) {
+            foreach (KeyValuePair<Player, int> entry in playerStakes) {
                 if (entry.Value > value) {
                     value = entry.Value;
-                    playerId = entry.Key;
+                    player = entry.Key;
                 }
             }
-            return playerId;
+            return player;
         }
 
         public int getTotalValue() {
@@ -154,9 +156,9 @@ namespace Node {
             return totalValue;
         }
 
-        public int getValueForPlayer(int playerId) {
+        public int getValueForPlayer(Player player) {
             int returnValue;
-            playerStakes.TryGetValue(playerId, out returnValue);
+            playerStakes.TryGetValue(player, out returnValue);
             return returnValue;
         }
 
@@ -165,10 +167,10 @@ namespace Node {
         }
 
         public bool isOwned() {
-            return owningPlayer != GameManager.NEUTRAL_PLAYER_ID;
+            return owningPlayer != gameManager.getNeutralPlayer();
         }
 
-        public int getOwnerId() {
+        public Player getOwningPlayer() {
             return owningPlayer;
         }
 
@@ -176,7 +178,7 @@ namespace Node {
             return neutralValue;
         }
 
-        public Dictionary<int, int> getPlayerStakes() {
+        public Dictionary<Player, int> getPlayerStakes() {
             return playerStakes;
         }
     }

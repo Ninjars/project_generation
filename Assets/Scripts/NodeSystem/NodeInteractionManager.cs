@@ -83,7 +83,7 @@ namespace Node {
                 return false;
             }
 
-            if (selectedNode == null && node.getOwnerId() == activePlayerId) {
+            if (selectedNode == null && node.getOwningPlayer().id == activePlayerId) {
                 interactionStartTime = Time.time;
             }
             return true;

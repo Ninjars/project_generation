@@ -12,7 +12,7 @@ namespace Node {
             this.node = node;
             this.nodeGraph = nodeGraph;
             foreach (GameNode target in nodeGraph.getConnectedNodes(node)) {
-                if (target.getOwnerId() != node.getOwnerId()) {
+                if (target.getOwningPlayer() != node.getOwningPlayer()) {
                     targets.Add(target);
                 }
             }
@@ -57,14 +57,14 @@ namespace Node {
          * avoid hostile nodes that have greater current value than this node
          */
         private float getWeightingForNodeTarget(GameNode queryNode, GameNode targetNode) {
-            bool isFriendly = queryNode.getOwnerId() == targetNode.getOwnerId();
+            bool isFriendly = queryNode.getOwningPlayer() == targetNode.getOwningPlayer();
             if (isFriendly && targetNode.isConnected(queryNode)) {
                 return -0.5f;
             }
             if (isFriendly && targetNode.getOwnerValue() == targetNode.maxValue) {
                 return -0.5f;
             }
-            bool isNeutral = targetNode.getOwnerId() == GameManager.NEUTRAL_PLAYER_ID;
+            bool isNeutral = targetNode.getOwningPlayer().isNeutralPlayer();
             if (!isNeutral && !isFriendly && targetNode.getOwnerValue() > queryNode.getOwnerValue()) {
                 return 0;
             }

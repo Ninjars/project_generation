@@ -5,7 +5,7 @@ namespace Node {
 
         protected GameManager gameManager;
 
-        void Awake() {
+        public virtual void Awake() {
             gameManager = FindObjectOfType<GameManager>();
         }
 

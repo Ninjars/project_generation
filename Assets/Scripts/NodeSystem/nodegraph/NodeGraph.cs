@@ -42,7 +42,7 @@ namespace Node {
         }
 
         public List<GameNode> findShortestFriendlyPath(GameNode fromNode, GameNode toNode) {
-            Debug.Assert(fromNode.getOwnerId() == toNode.getOwnerId());
+            Debug.Assert(fromNode.getOwningPlayer() == toNode.getOwningPlayer());
 
             List<GameNode> checkedNodes = new List<GameNode>();
             List<List<GameNode>> currentWorkingPaths = new List<List<GameNode>>();
@@ -83,7 +83,7 @@ namespace Node {
 
         private List<GameNode> getNewFriendlyConnectableNodes(GameNode a, List<GameNode> checkedNodes) {
             return connectionsForNodes[a]
-                .Where(node => node.getOwnerId() == a.getOwnerId() && !checkedNodes.Contains(node))
+                .Where(node => node.getOwningPlayer() == a.getOwningPlayer() && !checkedNodes.Contains(node))
                 .ToList();
         }
     }

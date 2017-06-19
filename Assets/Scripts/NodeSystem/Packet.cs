@@ -12,7 +12,7 @@ namespace Node {
         private float decelerationBuffer = 1f;
         private float completionDistance = 0.5f;
         public GameNode target;
-        private int ownerId = -1;
+        private Player owner;
 
     	// Use this for initialization
     	void Start () {
@@ -54,12 +54,12 @@ namespace Node {
             }
         }
 
-        public void setOwnerId(int id) {
-            ownerId = id;
+        public void setOwner(Player player) {
+            owner = player;
         }
 
-        public int getOwnerId() {
-            return ownerId;
+        public Player getOwner() {
+            return owner;
         }
     }
 }
