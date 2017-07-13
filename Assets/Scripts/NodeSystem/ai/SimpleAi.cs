@@ -46,7 +46,9 @@ namespace Node {
         }
 
         public override void onGameNodeOwnerChange(GameNode node) {
-            updateOwnedNodes();
+            if (node.getOwningPlayer() == player) {
+                updateOwnedNodes();
+            }
         }
 
         public override void onDecisionTick() {

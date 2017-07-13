@@ -27,5 +27,9 @@ namespace Node {
         public GameNode getHomeNode() {
             return homeNode;
         }
+
+        public override string ToString() {
+            return "<Player " + id + ">";
+        }
     }
 }

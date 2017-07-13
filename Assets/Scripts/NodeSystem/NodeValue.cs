@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Node {
     public class NodeValue {
@@ -9,10 +10,10 @@ namespace Node {
         private int neutralValue;
         private int maxValue;
         private Player owningPlayer;
-        private Action<Player> onOwnerChangeCallback;
+        private Action<Player, Player> onOwnerChangeCallback;
         private GameManager gameManager;
 
-        public NodeValue(GameManager gameManager, Player player, int maximumValue, int initialValue, Action<Player> onOwnerChangeCallback) {
+        public NodeValue(GameManager gameManager, Player player, int maximumValue, int initialValue, Action<Player, Player> onOwnerChangeCallback) {
             this.gameManager = gameManager;
             maxValue = maximumValue;
             if (initialValue > 0) {
@@ -38,17 +39,24 @@ namespace Node {
                 // once captured, remove the neutral value buffer
                 neutralValue = 0;
             }
+            Debug.Log("changing owner from " + owningPlayer + " to " + player);
+            Player previousOwner = owningPlayer;
             owningPlayer = player;
-            onOwnerChangeCallback(player);
+            onOwnerChangeCallback(previousOwner, player);
         }
 
         public void changePlayerValue(Player player, int value) {
             if (isOwned()) {
                 // update owning player value accordingly, possibly removing ownership if stake falls below 1
+                bool ownerChange;
                 if (player == owningPlayer) {
-                    updateOwnerValue(value);
+                    ownerChange = updateOwnerValue(value);
                 } else {
-                    updateOwnerValue(-value);
+                    ownerChange = updateOwnerValue(-value);
+                }
+                if (ownerChange) {
+                    Player highestStakesPlayer = getHighestValuePlayer();
+                    setOwningPlayer(highestStakesPlayer);
                 }
             } else {
                 // neutral player value is threshold for ownership
@@ -78,10 +86,10 @@ namespace Node {
         private void checkForOwnerChange() {
             bool isOwned = isUncontested() && playerStakes.Values.DefaultIfEmpty(-1).First() >= neutralValue;
             if (isOwned) {
-                Player owningPlayer = playerStakes.Keys.DefaultIfEmpty(gameManager.getNeutralPlayer()).First();
-                bool ownerChange = owningPlayer != getOwningPlayer();
+                Player highestStakesPlayer = playerStakes.Keys.DefaultIfEmpty(gameManager.getNeutralPlayer()).First();
+                bool ownerChange = highestStakesPlayer != getOwningPlayer();
                 if (ownerChange) {
-                    setOwningPlayer(owningPlayer);
+                    setOwningPlayer(highestStakesPlayer);
                 }
             }
         }
@@ -92,7 +100,6 @@ namespace Node {
             bool ownerChange = false;
             if (stake <= 0) {
                 playerStakes.Remove(owningPlayer);
-                owningPlayer = getHighestValuePlayer();
                 ownerChange = true;
             } else {
                 playerStakes[owningPlayer] = stake;

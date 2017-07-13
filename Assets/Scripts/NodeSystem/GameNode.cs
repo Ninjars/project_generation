@@ -31,27 +31,28 @@ namespace Node {
         private List<GameNode> pathToHome;
         private Player owningPlayer;
 
-        private void Awake() {
+        void Awake() {
             nodeUi = GetComponent<NodeUI>();
             gameManager = FindObjectOfType<GameManager>();
             owningPlayer = GetComponent<Player>();
             if (owningPlayer == null) {
                 owningPlayer = gameManager.getNeutralPlayer();
             }
-            currentValue = new NodeValue(gameManager, owningPlayer, maxValue, initialValue, newOwnerId => onOwnerChange(newOwnerId));
+            Debug.Log("init " + gameObject.name + " for player " + owningPlayer);
+            currentValue = new NodeValue(gameManager, owningPlayer, maxValue, initialValue, (oldOwner, newOwner) => onOwnerChange(oldOwner, newOwner));
             pathGenerator = gameObject.GetComponent<PathGen.PathwayGenerator>();
         }
 
-        private void Start() {
-            onOwnerChange(owningPlayer);
+        void Start() {
+            onOwnerChange(null, owningPlayer);
             nodeUi.onUpdate(getViewModel());
         }
 
         #region ownership handling
-        private void onOwnerChange(Player newOwner) {
+        private void onOwnerChange(Player oldOwner, Player newOwner) {
             Debug.Log("onOwnerChange: " + gameObject.name + " to player " + newOwner);
             gameObject.GetComponentInChildren<MeshRenderer>().material = newOwner.getNodeMaterial();
-            gameManager.onGameNodeOwnerChange(this);
+            gameManager.onGameNodeOwnerChange(oldOwner, this);
             clearConnection();
         }
 
@@ -69,6 +70,11 @@ namespace Node {
 
         public Vector3 getPosition() {
             return gameObject.transform.position;
+        }
+
+        internal void onDisconnectedFromHome() {
+            Debug.Log("onDisconnectedFromHome: " + gameObject.name);
+            onOwnerChange(null, gameManager.getNeutralPlayer());
         }
         #endregion
 

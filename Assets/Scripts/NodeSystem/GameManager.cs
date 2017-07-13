@@ -82,27 +82,53 @@ namespace Node {
             }
         }
 
-        public void onGameNodeOwnerChange(GameNode node) {
-            if (aiPlayers == null) {
-                return;
+        public void onGameNodeOwnerChange(Player oldOwner, GameNode node) {
+            Debug.Log("GameManager: onGameNodeOwnerChange " + oldOwner + " > " + node); 
+            if (oldOwner != null && !oldOwner == neutralPlayer) {
+                checkNodeConnectionsForPlayer(oldOwner);
             }
-            foreach (BaseAi ai in aiPlayers) {
-                ai.onGameNodeOwnerChange(node);
+            if (aiPlayers != null) {
+                foreach (BaseAi ai in aiPlayers) {
+                    ai.onGameNodeOwnerChange(node);
+                }
             }
         }
 
         public List<GameNode> getGameNodesForPlayer(Player player) {
+            Debug.Log("GameManager: getGameNodesForPlayer " + player);
             List<GameNode> playerNodes = new List<GameNode>();
             foreach (GameNode node in gameNodes) {
                 if (node.getOwningPlayer() == player) {
                     playerNodes.Add(node);
                 }
             }
+            Debug.Log("GameManager: returning " + playerNodes.Count);
             return playerNodes;
         }
 
         public NodeGraph getNodeGraph() {
             return nodeGraph;
+        }
+
+        private void checkNodeConnectionsForPlayer(Player player) {
+            GameNode homeNode = player.getHomeNode();
+            List<GameNode> nodesToCheck = getGameNodesForPlayer(player);
+            nodesToCheck.Remove(homeNode);
+            List<GameNode> nodesToRelease = new List<GameNode>();
+            while (nodesToCheck.Count > 0) {
+                Debug.Log("GameManager: checkNodeConnectionsForPlayer: nodesToCheck " + nodesToCheck.Count);
+                GameNode checkNode = nodesToCheck[0];
+                List<GameNode> routeHome = nodeGraph.findShortestFriendlyPath(homeNode, checkNode);
+                if (routeHome == null) {
+                    nodesToRelease.Add(checkNode);
+                    nodesToCheck.Remove(checkNode);
+                } else {
+                    nodesToCheck.RemoveAll(node => routeHome.Contains(node));
+                }
+            }
+            foreach (GameNode node in nodesToRelease) {
+                node.onDisconnectedFromHome();
+            }
         }
     }
 }
